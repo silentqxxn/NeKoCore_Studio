@@ -5,11 +5,16 @@ using System.Collections.Generic;
 
 public class proyectoejercicioEditorTarget : TargetRules
 {
-	public proyectoejercicioEditorTarget( TargetInfo Target) : base(Target)
-	{
-		Type = TargetType.Editor;
-		DefaultBuildSettings = BuildSettingsVersion.V5;
-		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_6;
-		ExtraModuleNames.Add("proyectoejercicio");
-	}
+    public proyectoejercicioEditorTarget(TargetInfo Target) : base(Target)
+    {
+        Type = TargetType.Editor;
+
+        // 1. Actualizado a V6 para UE 5.7
+        DefaultBuildSettings = BuildSettingsVersion.V6;
+
+        // 2. Actualizado al orden de inclusión de la 5.7
+        IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_7;
+
+        ExtraModuleNames.Add("proyectoejercicio");
+    }
 }
