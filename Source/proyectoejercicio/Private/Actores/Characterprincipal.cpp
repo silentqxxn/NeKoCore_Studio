@@ -17,6 +17,9 @@ ACharacterprincipal::ACharacterprincipal()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 400.0f, 0.0f);
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 	GetCharacterMovement()->MaxWalkSpeed = 400.0f;
+	GetCharacterMovement()->JumpZVelocity = 250.0f;
+	GetCharacterMovement()->GravityScale = 2.2f;
+	JumpMaxCount = 1;
 }
 
 void ACharacterprincipal::BeginPlay()
