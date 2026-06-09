@@ -15,6 +15,8 @@
 
 class UInputAction;
 class UInputMappingContext;
+class AWeaponMaster;
+
 UCLASS(Abstract)
 class PROYECTOEJERCICIO_API ACharacterprincipal : public ACharacter, public Iinterfazmonedas , public Iinterfazparahacerdanio, public IInterfazAttach
 {
@@ -28,7 +30,7 @@ public:
 	
 	virtual USkeletalMeshComponent* GetSkeletalMesh_Implementation() override;
 	
-
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventario")
 	int Monedas =0;
@@ -37,9 +39,22 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void MostrarMensaje();
  
+	// Sistema de armas
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void Server_EquipWeapon(AWeaponMaster* Weapon);
+
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void Server_DropWeapon();
+
+	UPROPERTY(ReplicatedUsing=OnRep_CurrentWeapon, BlueprintReadOnly, Category="Weapon")
+	AWeaponMaster* CurrentWeapon = nullptr;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void OnRep_CurrentWeapon();
 
 	// ---- Enhanced Input ----
 	UPROPERTY(EditAnywhere, Category = "Input")
@@ -48,8 +63,15 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Movimiento;
 
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* IA_Interactuar;
+	
 	void Move(const FInputActionValue& Value);
+	void TryInteract();
 
+private:
+	void DropCurrentWeapon();
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

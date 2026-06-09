@@ -4,10 +4,14 @@
 #include "InputActionValue.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Net/UnrealNetwork.h"
+#include "Actores/WeaponMaster.h"
+
 
 ACharacterprincipal::ACharacterprincipal()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -31,6 +35,30 @@ void ACharacterprincipal::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+void ACharacterprincipal::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ACharacterprincipal, CurrentWeapon);
+}
+void ACharacterprincipal::OnRep_CurrentWeapon()
+{
+}
+
+void ACharacterprincipal::Server_EquipWeapon_Implementation(AWeaponMaster* Weapon)
+{
+	if (!Weapon) return;
+
+	DropCurrentWeapon(); 
+	CurrentWeapon = Weapon;
+	CurrentWeapon->DisablePickup();
+	CurrentWeapon->AttachToComponent(GetMesh(),FAttachmentTransformRules::SnapToTargetNotIncludingScale,Weapon->SocketName
+	);
+}
+
+void ACharacterprincipal::Server_DropWeapon_Implementation()
+{
+	DropCurrentWeapon();
+}
 
 void ACharacterprincipal::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -42,6 +70,8 @@ void ACharacterprincipal::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		{
 			EnhancedInput->BindAction(IA_Movimiento, ETriggerEvent::Triggered, this, &ACharacterprincipal::Move);
 		}
+		if (IA_Interactuar)
+			EnhancedInput->BindAction(IA_Interactuar, ETriggerEvent::Triggered,	this, &ACharacterprincipal::TryInteract);
 	}
 }
 
@@ -87,4 +117,42 @@ void ACharacterprincipal::MostrarMensaje()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Overlapeando"));
 	}
+}
+
+void ACharacterprincipal::TryInteract()
+{
+	if (CurrentWeapon)
+	{
+		TArray<AActor*> Overlapping;
+		GetOverlappingActors(Overlapping, AWeaponMaster::StaticClass());
+
+		bool bNearPickup = false;
+		for (AActor* Actor : Overlapping)
+		{
+			AWeaponMaster* Weapon = Cast<AWeaponMaster>(Actor);
+			if (Weapon && Weapon != CurrentWeapon)
+			{
+				bNearPickup = true;
+				break;
+			}
+		}
+
+		if (!bNearPickup)
+			Server_DropWeapon();
+	}
+}
+
+void ACharacterprincipal::DropCurrentWeapon()
+{
+	if (!CurrentWeapon) return;
+
+	FVector DropLocation = GetActorLocation() + GetActorForwardVector() * 150.f;  // más lejos
+
+	CurrentWeapon->DetachFromActor(
+		FDetachmentTransformRules::KeepWorldTransform
+	);
+	CurrentWeapon->SetActorLocationAndRotation(DropLocation, FRotator::ZeroRotator);
+
+	CurrentWeapon->EnablePickupDelayed(1.0f); 
+	CurrentWeapon = nullptr;
 }
