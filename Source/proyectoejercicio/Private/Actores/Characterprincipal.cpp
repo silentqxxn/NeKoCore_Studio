@@ -1,16 +1,32 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
 #include "Actores/Characterprincipal.h"
+#include "CoreMinimal.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "GameFramework/Character.h"
+#include "interfaz/interfazparahacerdanio.h"
+#include "Kismet/GameplayStatics.h"              
+#include "Components/SkeletalMeshComponent.h"    
+#include "interfaz/InterfazAttach.h"             
 #include "InputActionValue.h"
-#include "GameFramework/PlayerController.h"
+#include "Actores/ItemMasterAttach.h"
+#include "Actores/ItemRecogible.h"
+#include "Actores/WeaponMaster.h"
+#include "componentes/ComponenteCrafteo.h"
+#include "componentes/ComponenteExperiencia.h"
+#include "componentes/ComponenteInventario.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
-#include "Actores/WeaponMaster.h"
+#include "Actores/FogataNueva.h"
+#include "Framework/PlayerControllerNuevo.h"
 
+
+//class UEnhancedInputLocalPlayerSubsystem;
 
 ACharacterprincipal::ACharacterprincipal()
 {
-	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
 	bUseControllerRotationPitch = false;
@@ -18,141 +34,325 @@ ACharacterprincipal::ACharacterprincipal()
 	bUseControllerRotationRoll = false;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 400.0f, 0.0f);
-	GetCharacterMovement()->bUseControllerDesiredRotation = false;
-	GetCharacterMovement()->MaxWalkSpeed = 400.0f;
-	GetCharacterMovement()->JumpZVelocity = 250.0f;
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
+	GetCharacterMovement()->MaxWalkSpeed = 400.f;
+	GetCharacterMovement()->JumpZVelocity = 250.f;
 	GetCharacterMovement()->GravityScale = 2.2f;
 	JumpMaxCount = 1;
+	
+	CompInventario = CreateDefaultSubobject<UComponenteInventario>(TEXT("CompInventario"));
+	CompExperiencia = CreateDefaultSubobject<UComponenteExperiencia>(TEXT("CompExperiencia"));
+	
+	CompCrafteo = CreateDefaultSubobject<UComponenteCrafteo>(TEXT("CompCrafteo"));
+
+	CompArmas = CreateDefaultSubobject<UComponenteArmas>(TEXT("CompArmas"));
 }
+
+void ACharacterprincipal::OnRep_CurrentItemAttach()
+{
+	if (CurrentItemAttach)
+	{
+		// Los clientes replican la acción visual
+		CurrentItemAttach->ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		CurrentItemAttach->SphereCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		CurrentItemAttach->SetReplicatingMovement(false);
+		CurrentItemAttach->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, CurrentItemAttach->SocketName);
+	}
+	OnEquipoActualizado.Broadcast();
+
+}
+
+void ACharacterprincipal::Server_EquipItemGeneric_Implementation(AItemMasterAttach* NuevoItem)
+{
+	if (!NuevoItem || NuevoItem->bEquipado) return;
+	if (FVector::Dist(GetActorLocation(), NuevoItem->GetActorLocation()) > 300.f) return;
+
+	if (NuevoItem->SocketName == "ManoDerechaSocket")
+	{
+		DesequiparItemAttach(ItemManoDerecha);   
+		ItemManoDerecha = NuevoItem;
+	}
+	else if (NuevoItem->SocketName == "ManoIzquierdaSocket")
+	{
+		DesequiparItemAttach(ItemManoIzquierda);
+		ItemManoIzquierda = NuevoItem;
+	}
+
+	NuevoItem->SetReplicatingMovement(false);
+	NuevoItem->ItemMesh->SetSimulatePhysics(false);
+	NuevoItem->ItemMesh->SetEnableGravity(false);
+	NuevoItem->ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	NuevoItem->SphereCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	FAttachmentTransformRules Rules(
+		EAttachmentRule::SnapToTarget,
+		EAttachmentRule::SnapToTarget,
+		EAttachmentRule::KeepWorld,   
+		true);
+	NuevoItem->AttachToComponent(GetMesh(), Rules, NuevoItem->SocketName);
+
+	NuevoItem->OwningCharacter = this;
+	NuevoItem->bEquipado = true;
+	NuevoItem->SetOwner(this);
+
+	ForceNetUpdate();
+	
+}
+
+
 
 void ACharacterprincipal::BeginPlay()
 {
 	Super::BeginPlay();
+/*
+	if (APlayerController* PC = Cast<APlayerController>(Controller))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Sub =ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+		{
+			Sub->AddMappingContext(IMC_Player, 0);
+		}
+	}*/
 }
 
 void ACharacterprincipal::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
 void ACharacterprincipal::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ACharacterprincipal, CurrentWeapon);
+	//DOREPLIFETIME(ACharacterprincipal, CurrentWeapon);
+	
 }
+
+
 void ACharacterprincipal::OnRep_CurrentWeapon()
 {
+	
+	OnEquipoActualizado.Broadcast();
 }
 
-void ACharacterprincipal::Server_EquipWeapon_Implementation(AWeaponMaster* Weapon)
-{
-	if (!Weapon) return;
 
-	DropCurrentWeapon(); 
-	CurrentWeapon = Weapon;
-	CurrentWeapon->DisablePickup();
-	CurrentWeapon->AttachToComponent(GetMesh(),FAttachmentTransformRules::SnapToTargetNotIncludingScale,Weapon->SocketName
-	);
-}
 
-void ACharacterprincipal::Server_DropWeapon_Implementation()
-{
-	DropCurrentWeapon();
-}
-
-void ACharacterprincipal::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		if (IA_Movimiento)
-		{
-			EnhancedInput->BindAction(IA_Movimiento, ETriggerEvent::Triggered, this, &ACharacterprincipal::Move);
-		}
-		if (IA_Interactuar)
-			EnhancedInput->BindAction(IA_Interactuar, ETriggerEvent::Triggered,	this, &ACharacterprincipal::TryInteract);
-	}
-}
-
-void ACharacterprincipal::Move(const FInputActionValue& Value)
-{
-	const FVector2D InputVec = Value.Get<FVector2D>();
-
-	if (!Controller) return;
-
-	if (InputVec.X != 0.0f)
-	{
-		AddControllerYawInput(InputVec.X);
-	}
-
-	if (InputVec.Y != 0.0f)
-	{
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-
-		AddMovementInput(ForwardDirection, InputVec.Y);
-	}
-}
-
-void ACharacterprincipal::AddMonedas_Implementation(int Moneda)
-{
-	Monedas += Moneda;
-
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Monedas: %d"), Monedas));
-	}
-}
 
 USkeletalMeshComponent* ACharacterprincipal::GetSkeletalMesh_Implementation()
 {
 	return GetMesh();
 }
 
-void ACharacterprincipal::MostrarMensaje()
+// ── IInterfazRecogeItems ──────────────────────────────────────────
+bool ACharacterprincipal::RecogerItem_Implementation(const FItemData& Item)
 {
-	if (GEngine)
+	return CompInventario?CompInventario->RecogerItem_Implementation(Item): false;
+}
+
+
+bool ACharacterprincipal::RecogerTodos_Implementation(const TArray<FItemData>& Items)
+{
+	return CompInventario? CompInventario->RecogerTodos_Implementation(Items): false;
+}
+
+bool ACharacterprincipal::PuedeRecoger_Implementation(const FItemData& Item) const
+{
+	return CompInventario? CompInventario->PuedeRecoger_Implementation(Item): false;
+}
+
+//Armas
+void ACharacterprincipal::DropCurrentWeapon()
+{
+
+}
+
+void ACharacterprincipal::DesequiparItemAttach(AItemMasterAttach* Item)
+{
+	if (!Item) return;
+
+	Item->OwningCharacter = nullptr;
+	Item->bEquipado = false;
+	Item->SetOwner(nullptr);
+
+	FVector DropLocation = GetActorLocation() + GetActorForwardVector() * 120.f;
+	Item->SetActorLocation(DropLocation);
+	Item->EnablePickupDelayed(1.0f);
+
+	// El servidor también debe ejecutar el detach + restaurar física
+	// (OnRep solo corre automático en clientes)
+	Item->OnRep_OwningCharacter();
+}
+
+
+
+
+// ── IInterfazCrafteo ──────────────────────────────────────────────
+bool ACharacterprincipal::CraftearItem_Implementation(FName RecetaID)
+{
+	return CompInventario? CompInventario->CraftearItem_Implementation(RecetaID): false;
+}
+
+bool ACharacterprincipal::PuedeCraftear_Implementation(FName RecetaID) const
+{
+	return CompInventario? CompInventario->PuedeCraftear_Implementation(RecetaID): false;
+}
+
+TArray<FName> ACharacterprincipal::ObtenerRecetasDisponibles_Implementation() const
+{
+	return CompInventario? CompInventario->ObtenerRecetasDisponibles_Implementation(): TArray<FName>();
+}
+
+
+//Input
+void ACharacterprincipal::SetupPlayerInputComponent(
+	UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (UEnhancedInputComponent* EI =
+		Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Overlapeando"));
+		if (IA_Movimiento)
+			EI->BindAction(IA_Movimiento, ETriggerEvent::Triggered,this, &ACharacterprincipal::Move);
+
+		if (IA_Interactuar)
+			EI->BindAction(IA_Interactuar, ETriggerEvent::Started,this, &ACharacterprincipal::TryInteract);
 	}
+}
+
+void ACharacterprincipal::Move(const FInputActionValue& Value)
+{
+	if (bMovimientoBloqueado) return;
+	
+	const FVector2D InputVec = Value.Get<FVector2D>();
+	if (!Controller) return;
+
+	if (InputVec.X != 0.f)
+		AddControllerYawInput(InputVec.X);
+
+	if (InputVec.Y != 0.f)
+	{
+		const FRotator Yaw(0, Controller->GetControlRotation().Yaw, 0);
+		const FVector Forward =
+			FRotationMatrix(Yaw).GetUnitAxis(EAxis::X);
+		AddMovementInput(Forward, InputVec.Y);
+	}
+}
+
+void ACharacterprincipal::OnRep_ItemManoIzquierda()
+{
+	OnEquipoActualizado.Broadcast();
+}
+
+void ACharacterprincipal::SetItemInteractuable(AActor* Item)
+{
+	ItemInteractuableCercano = Item;
+
+}
+
+void ACharacterprincipal::ClearItemInteractuable(AActor* Item)
+{
+	if (ItemInteractuableCercano == Item)
+		ItemInteractuableCercano = nullptr;
 }
 
 void ACharacterprincipal::TryInteract()
 {
-	if (CurrentWeapon)
+	/*TArray<AActor*> Overlapping;
+	GetOverlappingActors(Overlapping, AActor::StaticClass());
+	
+	bool bInteractuoConAlgo = false;
+	
+	for (AActor* Actor : Overlapping)
 	{
-		TArray<AActor*> Overlapping;
-		GetOverlappingActors(Overlapping, AWeaponMaster::StaticClass());
-
-		bool bNearPickup = false;
-		for (AActor* Actor : Overlapping)
+		if (AWeaponMaster* Weapon = Cast<AWeaponMaster>(Actor))
 		{
-			AWeaponMaster* Weapon = Cast<AWeaponMaster>(Actor);
-			if (Weapon && Weapon != CurrentWeapon)
+			if (Weapon != CurrentWeapon)
 			{
-				bNearPickup = true;
+				Server_EquipWeapon(Weapon);
+				bInteractuoConAlgo = true;
 				break;
 			}
 		}
+		else if (AItemMasterAttach* ItemAttach = Cast<AItemMasterAttach>(Actor))
+		{
+			ItemAttach->EquiparItem(this);
+			bInteractuoConAlgo = true;
+			break;
+		}
+		else if (AItemRecogible* Item = Cast<AItemRecogible>(Actor))
+		{
+			Item->Interactuar(this);
+			bInteractuoConAlgo = true;
+			break;
+		}
+	
+		*/
+		/*
+		else if (AActorMision* Mision = Cast<AActorMision>(Actor)) // Reemplazá por tu clase
+		{
+			Mision->Interactuar(); // O la función que uses para aceptar la misión
+			bInteractuoConAlgo = true;
+			break;
+		}
+		*/
+	
 
-		if (!bNearPickup)
-			Server_DropWeapon();
+	/*if (!bInteractuoConAlgo && CurrentWeapon)
+	{
+		Server_DropWeapon();
+	}*/
+	
+
+	
+	if (CompCrafteo && CompCrafteo->GetFogataCercana())
+	{
+		if (APlayerControllerNuevo* PC = Cast<APlayerControllerNuevo>(GetController()))
+			PC->ToggleCrafteo();
+		return;
 	}
+	
+	if (ItemInteractuableCercano)
+	{
+		if (AWeaponMaster* Arma = Cast<AWeaponMaster>(ItemInteractuableCercano))
+		{
+			if (CompArmas) 
+			{
+				CompArmas->Server_RecogerArma(Arma);
+			}
+		}
+		else if (ItemInteractuableCercano->Implements<UInterfazAttach>())
+		{
+			IInterfazAttach::Execute_Equipar(ItemInteractuableCercano, this);
+		}
+		return;
+	}
+	
 }
 
-void ACharacterprincipal::DropCurrentWeapon()
+
+
+void ACharacterprincipal::MostrarMensaje()
 {
-	if (!CurrentWeapon) return;
+	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green,TEXT("Overlapeando"));
+}
 
-	FVector DropLocation = GetActorLocation() + GetActorForwardVector() * 150.f;  // más lejos
+void ACharacterprincipal::SetMovimientoBloqueado(bool bBloqueado)
+{
+	bMovimientoBloqueado = bBloqueado;
 
-	CurrentWeapon->DetachFromActor(
-		FDetachmentTransformRules::KeepWorldTransform
-	);
-	CurrentWeapon->SetActorLocationAndRotation(DropLocation, FRotator::ZeroRotator);
+	if (bBloqueado)
+		GetCharacterMovement()->StopMovementImmediately();
+}
 
-	CurrentWeapon->EnablePickupDelayed(1.0f); 
-	CurrentWeapon = nullptr;
+void ACharacterprincipal::Server_EquipItemAttach_Implementation(AItemMasterAttach* Item)
+{
+	if (!Item) return;
+
+	Item->ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Item->SphereCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Item->SetReplicatingMovement(false);
+
+	Item->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, Item->SocketName);
+	
+	CurrentItemAttach = Item;
+	Item->SetOwner(this);
 }

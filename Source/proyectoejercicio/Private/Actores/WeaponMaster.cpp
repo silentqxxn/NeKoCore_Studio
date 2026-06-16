@@ -3,22 +3,11 @@
 #include "Actores/Characterprincipal.h"
 #include "Components/SphereComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AWeaponMaster::AWeaponMaster()
 {
-	bReplicates = true;
-	SetReplicatingMovement(true);
-
-	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>("WeaponMesh");
-	SetRootComponent(WeaponMesh);
-	WeaponMesh->SetSimulatePhysics(false);
-	WeaponMesh->SetEnableGravity(false);
-	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	PickupCollision = CreateDefaultSubobject<USphereComponent>("PickupCollision");
-	PickupCollision->SetupAttachment(WeaponMesh);
-	PickupCollision->SetSphereRadius(80.f);
-	PickupCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	
 }
 
 void AWeaponMaster::BeginPlay()
@@ -29,33 +18,19 @@ void AWeaponMaster::BeginPlay()
 void AWeaponMaster::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-
-	if (!HasAuthority() || !OtherActor) return;
-
-	ACharacterprincipal* Character = Cast<ACharacterprincipal>(OtherActor);
-	if (!Character) return;
-
-
-	PickupCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	Character->Server_EquipWeapon(this);
+	if (bEquipado) return;
+	if (!OtherActor) return;
+	if (ACharacterprincipal* Character = Cast<ACharacterprincipal>(OtherActor))
+		Character->SetItemInteractuable(this);
 }
 
-void AWeaponMaster::EnablePickup()
+void AWeaponMaster::NotifyActorEndOverlap(AActor* OtherActor)
 {
-	PickupCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	FVector Loc = GetActorLocation();
-	SetReplicatingMovement(true);
-	SetActorLocation(FVector(Loc.X, Loc.Y, Loc.Z - 50.f));
+	Super::NotifyActorEndOverlap(OtherActor);
+	if (!OtherActor) return;
+
+	if (ACharacterprincipal* Character = Cast<ACharacterprincipal>(OtherActor))
+		Character->ClearItemInteractuable(this);
 }
 
-void AWeaponMaster::DisablePickup()
-{
-	PickupCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	SetReplicatingMovement(false);
-}
 
-void AWeaponMaster::EnablePickupDelayed(float Delay)
-{
-	GetWorldTimerManager().SetTimer(PickupTimerHandle,this,&AWeaponMaster::EnablePickup,Delay,false);
-}
