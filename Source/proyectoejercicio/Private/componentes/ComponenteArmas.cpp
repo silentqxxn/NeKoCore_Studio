@@ -47,8 +47,11 @@ void UComponenteArmas::Server_RecogerArma_Implementation(AWeaponMaster* Arma)
 		AttacharArma(Arma, Arma->SocketGuardado);
 		SlotGuardado = Arma;
 	}
+	*/
+	AttacharArma(Arma, Arma->SocketName); 
+	SlotEquipado = Arma;
 	// ambos llenos → queda en el mundo
-*/
+
 	if (GetOwner()) GetOwner()->ForceNetUpdate();
 }
 /*

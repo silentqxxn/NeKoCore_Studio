@@ -62,7 +62,7 @@ void AItemMasterAttach::NotifyActorBeginOverlap(AActor* OtherActor)
 
     if (ACharacterprincipal* Character = Cast<ACharacterprincipal>(OtherActor))
         Character->SetItemInteractuable(this);
-    }
+}
 
 void AItemMasterAttach::NotifyActorEndOverlap(AActor* OtherActor)
 {
