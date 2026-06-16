@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "FItemData.h"
 #include "GameFramework/Actor.h"
 #include "ItemRecogible.generated.h"
 
@@ -24,16 +25,30 @@ public:
 	TObjectPtr<USphereComponent> SphereCollision;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TObjectPtr<UStaticMeshComponent> SphereMesh;
+	TObjectPtr<UStaticMeshComponent> MeshItem;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Item")
+	UDataTable* TablaItems;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	int MontoMonedas = 5;
+	UPROPERTY(EditAnywhere, Category="Item")
+	FName ItemID;
+
+	UPROPERTY(EditAnywhere, Category="Item")
+	int32 Cantidad = 1;
+	
+
+	//FX
+ 	UFUNCTION(BlueprintImplementableEvent, Category="Item")
+	void OnItemRecogido();   
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	void Interactuar(AActor* Interactor);
 };

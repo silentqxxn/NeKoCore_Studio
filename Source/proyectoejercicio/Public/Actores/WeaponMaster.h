@@ -2,7 +2,12 @@
 
 #pragma once
 #include "CoreMinimal.h"
+#include "EEquipableSlot.h"
 #include "GameFramework/Actor.h"
+#include "EWeaponType.h"
+#include "FItemData.h"
+#include "interfaz/InterfazAttach.h"
+#include "Actores/ItemMasterAttach.h"
 #include "WeaponMaster.generated.h"
 
 class ACharacterprincipal;
@@ -10,39 +15,31 @@ class USphereComponent;
 class USkeletalMeshComponent;
 
 UCLASS()
-class PROYECTOEJERCICIO_API AWeaponMaster : public AActor
+class PROYECTOEJERCICIO_API AWeaponMaster : public AItemMasterAttach 
 {
 	GENERATED_BODY()
 
 public:
 	AWeaponMaster();
-
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon")
-	USkeletalMeshComponent* WeaponMesh;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon|Stats")
 	float Damage = 10.f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon|Stats")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon")
 	float Range = 100.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon")
-	FName SocketName = "EspadaSocket";
+	EEquipableSlot SlotEquipable = EEquipableSlot::ManoDerecha;
 
-	void EnablePickup();
-	void DisablePickup();
-	void EnablePickupDelayed(float Delay = 1.0f);
-
+	// Socket donde se attachea cuando está guardada (reserva)
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon")
+	//FName SocketGuardado = "SpineSocket";
+	
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UI")
+	//FItemData InfoUI;
 	
 protected:
 	virtual void BeginPlay() override;
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
-
-private:
-	
-	FTimerHandle PickupTimerHandle;
-
-	UPROPERTY()
-	USphereComponent* PickupCollision;
-
+	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
 };

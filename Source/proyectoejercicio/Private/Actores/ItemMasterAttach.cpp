@@ -3,53 +3,123 @@
 
 #include "Actores/ItemMasterAttach.h"
 
+#include "Actores/Characterprincipal.h"
 #include "interfaz/InterfazAttach.h"
+#include "Components/SphereComponent.h"    
+#include "Components/StaticMeshComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AItemMasterAttach::AItemMasterAttach()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = false; 
 
-	bReplicates = true;
-	SetReplicatingMovement(true);
-	
-	Itemmesh = CreateDefaultSubobject<UStaticMeshComponent>("ItemMesh"); SetRootComponent(Itemmesh);
-	Itemmesh ->SetSimulatePhysics(false);
-	Itemmesh->SetEnableGravity(false);
+    bReplicates = true;
+    SetReplicatingMovement(true);
 
-	SphereCollision = CreateDefaultSubobject<USphereComponent>("SphereCollision");
-	SphereCollision->SetupAttachment(Itemmesh);
-	SphereCollision->SetSphereRadius(100.0f);
+    ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>("ItemMesh");
+    SetRootComponent(ItemMesh);
+    
+    ItemMesh->SetSimulatePhysics(false); 
+    ItemMesh->SetEnableGravity(false);    
+    ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly); 
+    ItemMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 
+    SphereCollision = CreateDefaultSubobject<USphereComponent>("SphereCollision");
+    SphereCollision->SetupAttachment(ItemMesh);
+    SphereCollision->SetSphereRadius(100.f);
+    SphereCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    SphereCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+    SphereCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 }
 
-// Called when the game starts or when spawned
+void AItemMasterAttach::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    DOREPLIFETIME(AItemMasterAttach, OwningCharacter);
+    DOREPLIFETIME(AItemMasterAttach, bEquipado);
+}
+
 void AItemMasterAttach::BeginPlay()
 {
-	Super::BeginPlay();
-	
+    Super::BeginPlay();
 }
 
-// Called every frame
-void AItemMasterAttach::Tick(float DeltaTime)
+void AItemMasterAttach::Equipar_Implementation(AActor* Interactor)
 {
-	Super::Tick(DeltaTime);
+    ACharacterprincipal* Character = Cast<ACharacterprincipal>(Interactor);
+    if (!Character) return;
 
+    Character->Server_EquipItemGeneric(this);
 }
 
 void AItemMasterAttach::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	Super::NotifyActorBeginOverlap(OtherActor);
-	if (!HasAuthority()) return;
-	if (!OtherActor) return;
+    Super::NotifyActorBeginOverlap(OtherActor);
+    //if (!HasAuthority() || bEquipado || !OtherActor || OtherActor == OwningCharacter) return;
 
-	if (OtherActor->Implements<UInterfazAttach>())
-	{
-		USkeletalMeshComponent*SkeletalMeshComponent= IInterfazAttach::Execute_GetSkeletalMesh(OtherActor);
-		if (!SkeletalMeshComponent) return;
-		AttachToComponent(SkeletalMeshComponent,FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
-	}
+    if (bEquipado || !OtherActor) return;
 
+    if (ACharacterprincipal* Character = Cast<ACharacterprincipal>(OtherActor))
+        Character->SetItemInteractuable(this);
+    }
+
+void AItemMasterAttach::NotifyActorEndOverlap(AActor* OtherActor)
+{
+    Super::NotifyActorEndOverlap(OtherActor);
+    if (!OtherActor) return;
+
+    if (ACharacterprincipal* Character = Cast<ACharacterprincipal>(OtherActor))
+        Character->ClearItemInteractuable(this);
+}
+
+
+
+void AItemMasterAttach::OnRep_OwningCharacter()
+{
+    if (OwningCharacter)
+    {
+       SetReplicatingMovement(false);
+       ItemMesh->SetSimulatePhysics(false);
+       ItemMesh->SetEnableGravity(false);
+       ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+       SphereCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+        FAttachmentTransformRules Rules(
+    EAttachmentRule::SnapToTarget,
+    EAttachmentRule::SnapToTarget,
+    EAttachmentRule::KeepWorld,   
+    true
+);       
+        AttachToComponent(OwningCharacter->GetMesh(), Rules, SocketName);
+    }
+    else
+    {
+        DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+        ItemMesh->SetSimulatePhysics(false);
+        ItemMesh->SetEnableGravity(false);
+        ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+        SphereCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+        SetReplicatingMovement(true);
+    }
+}
+
+void AItemMasterAttach::EnablePickup()
+{
+    bEquipado = false;
+    SphereCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    ItemMesh->SetSimulatePhysics(false);
+    ItemMesh->SetEnableGravity(false);
+    ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    SetReplicatingMovement(true);
+}
+
+void AItemMasterAttach::DisablePickup()
+{
+}
+
+void AItemMasterAttach::EnablePickupDelayed(float Delay)
+{
+    GetWorldTimerManager().SetTimer(PickupTimerHandle, this, &AItemMasterAttach::EnablePickup, Delay, false);
 }
 

@@ -25,4 +25,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interfaz player")
 	USkeletalMeshComponent* GetSkeletalMesh();
+	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="Interfaz player")
+	void Equipar(AActor* Interactor);
 };
