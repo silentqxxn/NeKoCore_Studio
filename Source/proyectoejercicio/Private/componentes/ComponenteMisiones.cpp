@@ -180,3 +180,8 @@ void UComponenteMisiones::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
     DOREPLIFETIME(UComponenteMisiones, ActiveQuests);
     DOREPLIFETIME(UComponenteMisiones, IndividualProgress);
 }
+
+void UComponenteMisiones::OnRep_ActiveQuests()
+{
+    OnQuestListUpdated.Broadcast();
+}
