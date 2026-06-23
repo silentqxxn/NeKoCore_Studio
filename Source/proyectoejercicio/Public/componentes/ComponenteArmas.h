@@ -21,7 +21,6 @@ public:
 	virtual void GetLifetimeReplicatedProps(
 		TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	// ── Equipadas (activas) ──────────────────────────────────
 	UPROPERTY(Replicated, BlueprintReadOnly, Category="Armas")
 	AWeaponMaster* ArmaManoDerecha = nullptr;     // melee
 
@@ -31,29 +30,22 @@ public:
 	UPROPERTY(Replicated, BlueprintReadOnly, Category="Armas")
 	AWeaponMaster* ArmaEspalda = nullptr;         // distancia
 
-	/*// ── Guardadas (reserva) ───────────────────────────────────
-	UPROPERTY(Replicated, BlueprintReadOnly, Category="Armas")
-	AWeaponMaster* ArmaManoDerechaGuardada = nullptr;
 
-	UPROPERTY(Replicated, BlueprintReadOnly, Category="Armas")
-	AWeaponMaster* ArmaManoIzquierdaGuardada = nullptr;
-
-	UPROPERTY(Replicated, BlueprintReadOnly, Category="Armas")
-	AWeaponMaster* ArmaEspaldaGuardada = nullptr;
-*/
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category="Armas")
 	void Server_RecogerArma(AWeaponMaster* Arma);
 
-	//UFUNCTION(BlueprintCallable, Server, Reliable, Category="Armas")
-	//void Server_IntercambiarArma(EEquipableSlot Slot);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category="Armas")
 	void Server_SoltarEquipada(EEquipableSlot Slot);
 	
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_AttachVisual(AWeaponMaster* Arma, FName Socket);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_DetachVisual(AWeaponMaster* Arma);
 	
 private:
 	AWeaponMaster*& GetSlotEquipado(EEquipableSlot Slot);
-//	AWeaponMaster*& GetSlotGuardado(EEquipableSlot Slot);
 
 	void AttacharArma(AWeaponMaster* Arma, FName Socket);
 protected:
@@ -63,5 +55,5 @@ protected:
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
+		FActorComponentTickFunction* ThisTickFunction) override;
 };

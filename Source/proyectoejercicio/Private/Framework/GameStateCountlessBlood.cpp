@@ -40,6 +40,7 @@ void AGameStateCountlessBlood::AddSharedProgress(FName QuestID, ETiposDeObjetivo
 	{
 		SharedQuestProgress.Add(FQuestProgress(QuestID, Amount));
 	}
+	OnRep_SharedQuestProgress();
 }
 
 int32 AGameStateCountlessBlood::GetSharedProgress(FName QuestID) const
@@ -52,4 +53,10 @@ int32 AGameStateCountlessBlood::GetSharedProgress(FName QuestID) const
 		}
 	}
 	return 0;
+}
+
+void AGameStateCountlessBlood::OnRep_SharedQuestProgress()
+{
+	UE_LOG(LogTemp, Warning, TEXT("OnRep_SharedQuestProgress ejecutado. Notificando a la UI compartida."));
+	OnSharedProgressUpdated.Broadcast();
 }

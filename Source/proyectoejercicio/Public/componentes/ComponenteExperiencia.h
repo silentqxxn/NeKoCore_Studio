@@ -9,7 +9,6 @@
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnXPCambia, int32, XPActual, int32, XPMaximo);
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSubeNivel, int32, NivelAnterior, int32, NivelNuevo);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -23,6 +22,9 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Experiencia | Config")
+	UDataTable* TablaNiveles;
+	
 	UPROPERTY(ReplicatedUsing=OnRep_Datos, BlueprintReadOnly, Category="Experiencia")
 	FExperienciaData Datos;
 	
@@ -47,9 +49,6 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="Experiencia")
 	FOnSubeNivel OnSubeNivel;
 	
-
-
-
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -59,8 +58,6 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 private:
-	
-	
 	
 	UFUNCTION()
 	void OnRep_Datos(FExperienciaData OldDatos);

@@ -39,8 +39,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	void ProgressObjective(FName QuestID, ETiposDeObjetivo Type, int32 Amount);
 
-	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Quest")
+	//UPROPERTY(Replicated, BlueprintReadOnly, Category = "Quest")
+	//TArray<FQuestProgress> IndividualProgress;
+	
+	UPROPERTY(ReplicatedUsing = OnRep_IndividualProgress, BlueprintReadOnly, Category = "Quest")
 	TArray<FQuestProgress> IndividualProgress;
+
+	UFUNCTION()
+	void OnRep_IndividualProgress();
 	
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	void TurnInQuest(FName QuestID);

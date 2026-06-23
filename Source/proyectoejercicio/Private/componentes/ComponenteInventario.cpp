@@ -108,11 +108,9 @@ bool UComponenteInventario::RecogerTodos_Implementation(const TArray<FItemData>&
 
 bool UComponenteInventario::PuedeRecoger_Implementation(const FItemData& Item) const
 {
-	// Ejemplo: límite de 40 slots
-	return Items.Num() < 40;
+	return Items.Num() < 15;
 }
 
-// ── IInterfazCrafteo ─────────────────────────────────────────────
 bool UComponenteInventario::CraftearItem_Implementation(FName RecetaID)
 {
 	if (!PuedeCraftear_Implementation(RecetaID)) return false;
@@ -132,7 +130,7 @@ TArray<FName> UComponenteInventario::ObtenerRecetasDisponibles_Implementation() 
 }
 
 void UComponenteInventario::Server_QuitarItem_Implementation(FName ItemID, int32 Cantidad)
-{{
+{
 	for (int32 i = 0; i < Items.Num(); i++)
 	{
 		if (Items[i].ItemID == ItemID)
@@ -146,7 +144,7 @@ void UComponenteInventario::Server_QuitarItem_Implementation(FName ItemID, int32
 			return;
 		}
 	}
-}
+
 }
 
 APlayerController* UComponenteInventario::GetOwnerPC() const
