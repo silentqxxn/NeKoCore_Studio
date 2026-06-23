@@ -15,6 +15,7 @@ UComponenteMisiones::UComponenteMisiones()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
+    SetIsReplicatedByDefault(true);
 	// ...
 }
 
@@ -22,7 +23,6 @@ void UComponenteMisiones::AcceptQuest_Implementation(FName QuestID)
 {
     if (!QuestDataTable) return;
     
-    // Evitar aceptar misiones duplicadas
     if (ActiveQuests.Contains(QuestID)) return;
 
     FQuestData* QuestData = QuestDataTable->FindRow<FQuestData>(QuestID, TEXT("Context_AcceptQuest"));
@@ -31,7 +31,6 @@ void UComponenteMisiones::AcceptQuest_Implementation(FName QuestID)
     {
         ActiveQuests.Add(QuestID);
         
-        // Disparamos el delegado para que la UI se refresque automáticamente
         OnQuestListUpdated.Broadcast();
         
         UE_LOG(LogTemp, Log, TEXT("Misión aceptada con éxito: %s"), *QuestID.ToString());
@@ -41,6 +40,12 @@ void UComponenteMisiones::AcceptQuest_Implementation(FName QuestID)
 void UComponenteMisiones::ProgressObjective(FName QuestID, ETiposDeObjetivo Type, int32 Amount)
 {
     if (!GetOwner()->HasAuthority()) return;
+
+    FName OwningQuestID;
+    FQuestStage Stage;
+    if (!FindStageForObjective(QuestID, OwningQuestID, Stage)) return; 
+
+    if (IsObjectiveStageComplete(QuestID)) return; 
 
     switch (Type)
     {
@@ -57,11 +62,14 @@ void UComponenteMisiones::ProgressObjective(FName QuestID, ETiposDeObjetivo Type
                     break;
                 }
             }
-
+                
             if (!bFound)
             {
                 IndividualProgress.Add(FQuestProgress(QuestID, Amount));
             }
+            
+            OnRep_IndividualProgress(); 
+
             break;
         }
 
@@ -72,9 +80,15 @@ void UComponenteMisiones::ProgressObjective(FName QuestID, ETiposDeObjetivo Type
             {
                 GS->AddSharedProgress(QuestID, Type, Amount);
             }
+                
             break;
         }
     }
+}
+
+void UComponenteMisiones::OnRep_IndividualProgress()
+{
+    OnQuestListUpdated.Broadcast();
 }
 
 void UComponenteMisiones::TurnInQuest(FName QuestID)
@@ -85,11 +99,11 @@ void UComponenteMisiones::TurnInQuest(FName QuestID)
     if (IsQuestCompleted(QuestID))
     {
         ActiveQuests.Remove(QuestID);
-        // Limpiamos progreso individual residual
-        IndividualProgress.RemoveAll([&](const FQuestProgress& Item) { return Item.QuestID == QuestID; });
         
+        IndividualProgress.RemoveAll([&](const FQuestProgress& Item) { return Item.QuestID == QuestID; });
+       
         OnQuestCompleted.Broadcast(QuestID);
-        OnQuestListUpdated.Broadcast(); // Refrescamos la lista al completar
+        OnQuestListUpdated.Broadcast();
     }
 }
 
@@ -112,7 +126,6 @@ bool UComponenteMisiones::IsQuestCompleted(FName QuestID) const
     return true;
 }
 
-// Funciones auxiliares
 bool UComponenteMisiones::FindStageForObjective(FName ObjectiveID, FName& OutQuestID, FQuestStage& OutStage) const
 {
     if (!QuestDataTable) return false;
@@ -156,6 +169,12 @@ int32 UComponenteMisiones::GetCurrentObjectiveProgress(FName ObjectiveID, ETipos
 void UComponenteMisiones::BeginPlay()
 {
     Super::BeginPlay();
+    
+    if (GetOwner()->HasAuthority()) {
+        UE_LOG(LogTemp, Warning, TEXT("Componente existe en SERVER"));
+    } else {
+        UE_LOG(LogTemp, Warning, TEXT("Componente existe en CLIENTE"));
+    }
 }
 
 void UComponenteMisiones::TickComponent(float DeltaTime, ELevelTick TickType,
@@ -179,4 +198,9 @@ void UComponenteMisiones::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(UComponenteMisiones, ActiveQuests);
     DOREPLIFETIME(UComponenteMisiones, IndividualProgress);
+}
+
+void UComponenteMisiones::OnRep_ActiveQuests()
+{
+    OnQuestListUpdated.Broadcast();
 }

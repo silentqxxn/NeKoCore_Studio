@@ -10,6 +10,12 @@ AWeaponMaster::AWeaponMaster()
 	
 }
 
+void AWeaponMaster::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AWeaponMaster, MunicionActual);
+}
+
 void AWeaponMaster::BeginPlay()
 {
 	Super::BeginPlay();

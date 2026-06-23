@@ -27,8 +27,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quest")
 	UDataTable* QuestDataTable;
 
-	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Quest")
+	UPROPERTY(ReplicatedUsing = OnRep_ActiveQuests, BlueprintReadOnly, Category = "Quest")
 	TArray<FName> ActiveQuests;
+	
+	UFUNCTION()
+	void OnRep_ActiveQuests();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Quest")
 	void AcceptQuest(FName QuestID);
@@ -36,8 +39,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	void ProgressObjective(FName QuestID, ETiposDeObjetivo Type, int32 Amount);
 
-	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Quest")
+	//UPROPERTY(Replicated, BlueprintReadOnly, Category = "Quest")
+	//TArray<FQuestProgress> IndividualProgress;
+	
+	UPROPERTY(ReplicatedUsing = OnRep_IndividualProgress, BlueprintReadOnly, Category = "Quest")
 	TArray<FQuestProgress> IndividualProgress;
+
+	UFUNCTION()
+	void OnRep_IndividualProgress();
 	
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	void TurnInQuest(FName QuestID);
@@ -58,6 +67,7 @@ public:
 	bool FindStageForObjective(FName ObjectiveID, FName& OutQuestID, FQuestStage& OutStage) const;
 	int32 GetCurrentObjectiveProgress(FName ObjectiveID, ETiposDeObjetivo Type) const;
 	
+
 	
 protected:
 	// Called when the game starts

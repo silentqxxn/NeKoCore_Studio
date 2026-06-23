@@ -27,9 +27,7 @@ void UComponenteExperiencia::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
-	Datos.XPParaSiguienteNivel = CalcularXPRequerida(1);
-
+	Datos.XPParaSiguienteNivel = CalcularXPRequerida(Datos.NivelActual + 1);
 }
 
 
@@ -46,10 +44,10 @@ void UComponenteExperiencia::Server_AgregarXP_Implementation(int32 Cantidad)
 {
 	if (Cantidad <= 0) return;
 	FExperienciaData OldDatos = Datos;
-	
+    
 	Datos.XPActual += Cantidad;
 	ProcesarSubidaNivel();
-	
+    
 	OnRep_Datos(OldDatos);
 }
 
@@ -57,17 +55,30 @@ void UComponenteExperiencia::ProcesarSubidaNivel()
 {
 	while (Datos.XPActual >= Datos.XPParaSiguienteNivel)
 	{
+		if (CalcularXPRequerida(Datos.NivelActual + 1) >= 999999) break;
+
 		Datos.XPActual -= Datos.XPParaSiguienteNivel;
 		Datos.NivelActual++;
-		Datos.XPParaSiguienteNivel = CalcularXPRequerida(Datos.NivelActual);
-
+       
+		Datos.XPParaSiguienteNivel = CalcularXPRequerida(Datos.NivelActual + 1);
 	}
 }
 
 int32 UComponenteExperiencia::CalcularXPRequerida(int32 Nivel) const
 {
-	
-	return 100 * Nivel + 50 * (Nivel * Nivel);
+	if (!TablaNiveles) return 999999; 
+
+	FName RowName = FName(*FString::FromInt(Nivel));
+    
+	FProgresoNivelRow* FilaNivel = TablaNiveles->FindRow<FProgresoNivelRow>(RowName, TEXT("BusquedaSangre"));
+
+	if (FilaNivel)
+	{
+		return FilaNivel->SangNecesaria;
+	}
+
+	return 999999;
+
 }
 
 float UComponenteExperiencia::GetPorcentajeXP() const

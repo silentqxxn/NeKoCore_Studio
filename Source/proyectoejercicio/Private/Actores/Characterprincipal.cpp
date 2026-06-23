@@ -6,10 +6,13 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/Character.h"
 #include "interfaz/interfazparahacerdanio.h"
-#include "Kismet/GameplayStatics.h"              
+#include "Kismet/GameplayStatics.h"      
+#include "componentes/ComponenteEstadisticas.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Components/SkeletalMeshComponent.h"    
 #include "interfaz/InterfazAttach.h"             
 #include "InputActionValue.h"
+#include "NiagaraComponent.h"
 #include "Actores/ItemMasterAttach.h"
 #include "Actores/ItemRecogible.h"
 #include "Actores/WeaponMaster.h"
@@ -42,17 +45,30 @@ ACharacterprincipal::ACharacterprincipal()
 	
 	CompInventario = CreateDefaultSubobject<UComponenteInventario>(TEXT("CompInventario"));
 	CompExperiencia = CreateDefaultSubobject<UComponenteExperiencia>(TEXT("CompExperiencia"));
-	
 	CompCrafteo = CreateDefaultSubobject<UComponenteCrafteo>(TEXT("CompCrafteo"));
-
 	CompArmas = CreateDefaultSubobject<UComponenteArmas>(TEXT("CompArmas"));
+	CompEstadisticas = CreateDefaultSubobject<UComponenteEstadisticas>(TEXT("ComponenteEstadisticasNat"));	
+	
+	IndicadorRanged = CreateDefaultSubobject<UDecalComponent>(TEXT("IndicadorRanged"));
+    
+	IndicadorRanged->SetupAttachment(GetMesh());
+
+	IndicadorRanged->SetRelativeLocationAndRotation(FVector(100.f, 0.f, 0.f), FRotator(-90.f, 0.f, 0.f));
+
+	IndicadorRanged->SetVisibility(false);
+	
+	EfectoCorrerNiagara = CreateDefaultSubobject<UNiagaraComponent>(TEXT("EfectoCorrerNiagara"));
+	EfectoCorrerNiagara->SetupAttachment(GetMesh());
+	EfectoCorrerNiagara->bAutoActivate = false;
+	
+	TargetFOV = FOVNormal;
+
 }
 
 void ACharacterprincipal::OnRep_CurrentItemAttach()
 {
 	if (CurrentItemAttach)
 	{
-		// Los clientes replican la acción visual
 		CurrentItemAttach->ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		CurrentItemAttach->SphereCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		CurrentItemAttach->SetReplicatingMovement(false);
@@ -104,25 +120,31 @@ void ACharacterprincipal::Server_EquipItemGeneric_Implementation(AItemMasterAtta
 void ACharacterprincipal::BeginPlay()
 {
 	Super::BeginPlay();
-/*
-	if (APlayerController* PC = Cast<APlayerController>(Controller))
+	UE_LOG(LogTemp, Warning, TEXT("[%s] BeginPlay - Owner actual: %s | Controller: %s"),
+		HasAuthority() ? TEXT("SERVER") : TEXT("CLIENT"),
+		*GetNameSafe(GetOwner()),
+		*GetNameSafe(GetController()));
+	
+	if (USpringArmComponent* SpringArm = FindComponentByClass<USpringArmComponent>())
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* Sub =ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
-		{
-			Sub->AddMappingContext(IMC_Player, 0);
-		}
-	}*/
+		DistanciaNormal = SpringArm->TargetArmLength;
+		DistanciaSalto = DistanciaNormal + 150.0f;
+	}
+
+	TargetFOV = FOVNormal;
+	TargetDistancia = DistanciaNormal;
+
 }
 
 void ACharacterprincipal::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+		
 }
 
 void ACharacterprincipal::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	//DOREPLIFETIME(ACharacterprincipal, CurrentWeapon);
 	
 }
 
@@ -141,7 +163,6 @@ USkeletalMeshComponent* ACharacterprincipal::GetSkeletalMesh_Implementation()
 	return GetMesh();
 }
 
-// ── IInterfazRecogeItems ──────────────────────────────────────────
 bool ACharacterprincipal::RecogerItem_Implementation(const FItemData& Item)
 {
 	return CompInventario?CompInventario->RecogerItem_Implementation(Item): false;
@@ -158,7 +179,142 @@ bool ACharacterprincipal::PuedeRecoger_Implementation(const FItemData& Item) con
 	return CompInventario? CompInventario->PuedeRecoger_Implementation(Item): false;
 }
 
-//Armas
+
+void ACharacterprincipal::Server_SetEfectoCorrer_Implementation(bool bActivo)
+{
+	Multicast_SetEfectoCorrer(bActivo);
+}
+
+void ACharacterprincipal::Multicast_SetEfectoCorrer_Implementation(bool bActivo)
+{
+	if (EfectoCorrerNiagara)
+	{
+		if (bActivo)
+		{
+			EfectoCorrerNiagara->Activate(true); 
+		}
+		else
+		{
+			EfectoCorrerNiagara->Deactivate();
+		}
+	}
+}
+
+void ACharacterprincipal::IniciarPunteriaRanged()
+{
+	if (CompArmas && CompArmas->ArmaEspalda && IndicadorRanged)
+	{
+		if (MaterialFlechaPunteria && !IndicadorRanged->GetDecalMaterial())
+		{
+			IndicadorRanged->SetDecalMaterial(MaterialFlechaPunteria);
+		}
+		IndicadorRanged->SetVisibility(true);
+	}
+}
+
+void ACharacterprincipal::IntentarSaltar()
+{
+	if (!GetCharacterMovement()) return;
+
+	bool bEnElSuelo = GetCharacterMovement()->IsMovingOnGround();
+
+	if (bEnElSuelo || bCoyoteTimeActivo)
+	{
+		SaltosRealizados = 1; 
+		bCoyoteTimeActivo = false;
+		GetWorldTimerManager().ClearTimer(TimerCoyote);
+        
+		Jump();
+	}
+	else if (SaltosRealizados < MaximoDeSaltos)
+	{
+		SaltosRealizados++;
+        
+		FVector VelocidadActual = GetCharacterMovement()->Velocity;
+		VelocidadActual.Z = GetCharacterMovement()->JumpZVelocity;
+		GetCharacterMovement()->Velocity = VelocidadActual;
+        
+		Jump();
+	}
+	TargetDistancia = DistanciaSalto;
+	TargetFOV = FOVSalto;
+	GetWorldTimerManager().SetTimer(TimerTransicionCamara, this, &ACharacterprincipal::ActualizarCamara, 0.01f, true);
+}
+
+void ACharacterprincipal::IntentarDetenerSalto()
+{
+	StopJumping();
+
+}
+
+void ACharacterprincipal::FinalizarCoyoteTime()
+{
+	bCoyoteTimeActivo = false;
+	if (SaltosRealizados == 0)
+	{
+		SaltosRealizados = 1; 
+	}
+}
+
+
+void ACharacterprincipal::Server_EjecutarDash_Implementation(FVector FuerzaEmpuje)
+{
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->GroundFriction = 0.f;
+		LaunchCharacter(FuerzaEmpuje, true, false);
+		GetWorldTimerManager().SetTimer(TimerDuracionDash, this, &ACharacterprincipal::FinalizarDash, DuracionDash, false);
+	}
+}
+
+void ACharacterprincipal::FinalizarDash()
+{
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->GroundFriction = FriccionOriginal > 0.f ? FriccionOriginal : 8.0f;
+
+		FVector VelocidadFrenada = GetCharacterMovement()->Velocity * 0.1f; 
+		VelocidadFrenada.Z = GetCharacterMovement()->Velocity.Z;         
+		GetCharacterMovement()->Velocity = VelocidadFrenada;
+		TargetFOV = GetCharacterMovement()->IsFalling() ? FOVSalto : FOVNormal;
+		GetWorldTimerManager().SetTimer(TimerTransicionCamara, this, &ACharacterprincipal::ActualizarCamara, 0.01f, true);
+	}
+}
+
+void ACharacterprincipal::EjecutarDash()
+{
+	if (!bPuedeDashear || bMovimientoBloqueado || !GetCharacterMovement()) return;
+
+	bPuedeDashear = false;
+
+	FVector DireccionDash = GetCharacterMovement()->GetLastInputVector();
+	if (DireccionDash.IsNearlyZero())
+	{
+		DireccionDash = GetActorForwardVector();
+	}
+	DireccionDash.Normalize();
+
+	FVector EmpujeDash = DireccionDash * FuerzaDash;
+	EmpujeDash.Z = 0.f; 
+
+	FriccionOriginal = GetCharacterMovement()->GroundFriction;
+	GetCharacterMovement()->GroundFriction = 0.f;
+
+	LaunchCharacter(EmpujeDash, true, false);
+	Server_EjecutarDash(EmpujeDash);
+	TargetFOV = FOVDash;
+	GetWorldTimerManager().SetTimer(TimerTransicionCamara, this, &ACharacterprincipal::ActualizarCamara, 0.01f, true);
+	
+	GetWorldTimerManager().SetTimer(TimerDuracionDash, this, &ACharacterprincipal::FinalizarDash, DuracionDash, false);
+	GetWorldTimerManager().SetTimer(TimerCooldownDash, this, &ACharacterprincipal::ResetearDash, CooldownDash, false);
+}
+
+void ACharacterprincipal::ResetearDash()
+{
+	bPuedeDashear = true;
+}
+
+
 void ACharacterprincipal::DropCurrentWeapon()
 {
 
@@ -176,15 +332,11 @@ void ACharacterprincipal::DesequiparItemAttach(AItemMasterAttach* Item)
 	Item->SetActorLocation(DropLocation);
 	Item->EnablePickupDelayed(1.0f);
 
-	// El servidor también debe ejecutar el detach + restaurar física
-	// (OnRep solo corre automático en clientes)
+	
 	Item->OnRep_OwningCharacter();
 }
 
 
-
-
-// ── IInterfazCrafteo ──────────────────────────────────────────────
 bool ACharacterprincipal::CraftearItem_Implementation(FName RecetaID)
 {
 	return CompInventario? CompInventario->CraftearItem_Implementation(RecetaID): false;
@@ -201,9 +353,7 @@ TArray<FName> ACharacterprincipal::ObtenerRecetasDisponibles_Implementation() co
 }
 
 
-//Input
-void ACharacterprincipal::SetupPlayerInputComponent(
-	UInputComponent* PlayerInputComponent)
+void ACharacterprincipal::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
@@ -215,6 +365,65 @@ void ACharacterprincipal::SetupPlayerInputComponent(
 
 		if (IA_Interactuar)
 			EI->BindAction(IA_Interactuar, ETriggerEvent::Started,this, &ACharacterprincipal::TryInteract);
+		
+		if (ActionAtaqueRanged)
+		{
+			EI->BindAction(ActionAtaqueRanged, ETriggerEvent::Started, this, &ACharacterprincipal::IniciarPunteriaRanged);
+           
+			EI->BindAction(ActionAtaqueRanged, ETriggerEvent::Completed, this, &ACharacterprincipal::FinalizarYAtaqueRanged);
+		}
+		if (IA_Correr)
+		{
+			EI->BindAction(IA_Correr, ETriggerEvent::Started, this, &ACharacterprincipal::EmpezarACorrer);
+			EI->BindAction(IA_Correr, ETriggerEvent::Completed, this, &ACharacterprincipal::DejarDeCorrer);
+		}
+		if (IA_Saltar)
+		{
+			EI->BindAction(IA_Saltar, ETriggerEvent::Started, this, &ACharacterprincipal::IntentarSaltar);
+			EI->BindAction(IA_Saltar, ETriggerEvent::Completed, this, &ACharacterprincipal::IntentarDetenerSalto);
+		}
+		if (IA_Dash)
+		{
+			EI->BindAction(IA_Dash, ETriggerEvent::Started, this, &ACharacterprincipal::EjecutarDash);
+		}
+	}
+}
+
+void ACharacterprincipal::Server_SetVelocidadMax_Implementation(float NuevaVelocidad)
+{
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = NuevaVelocidad;
+	}
+}
+
+void ACharacterprincipal::EmpezarACorrer()
+{
+	if (CompEstadisticas && GetCharacterMovement())
+	{
+		float VelocidadBaseSegura = (CompEstadisticas->VelocidadActual > 0.f) ? CompEstadisticas->VelocidadActual : CompEstadisticas->VelocidadBase;
+		float VelocidadCorrer = VelocidadBaseSegura * MultiplicadorCorrer;
+
+		GetCharacterMovement()->MaxWalkSpeed = VelocidadCorrer;
+       	Server_SetVelocidadMax(VelocidadCorrer);
+		Server_SetEfectoCorrer(true);
+		TargetFOV = FOVCorrer;
+		GetWorldTimerManager().SetTimer(TimerTransicionCamara, this, &ACharacterprincipal::ActualizarCamara, 0.01f, true);
+		
+	}
+}
+
+void ACharacterprincipal::DejarDeCorrer()
+{
+	if (CompEstadisticas && GetCharacterMovement())
+	{
+		float VelocidadBaseSegura = (CompEstadisticas->VelocidadActual > 0.f) ? CompEstadisticas->VelocidadActual : CompEstadisticas->VelocidadBase;
+        
+		GetCharacterMovement()->MaxWalkSpeed = VelocidadBaseSegura;
+		Server_SetVelocidadMax(VelocidadBaseSegura);
+		Server_SetEfectoCorrer(false);
+		TargetFOV = FOVNormal;
+		GetWorldTimerManager().SetTimer(TimerTransicionCamara, this, &ACharacterprincipal::ActualizarCamara, 0.01f, true);
 	}
 }
 
@@ -355,4 +564,83 @@ void ACharacterprincipal::Server_EquipItemAttach_Implementation(AItemMasterAttac
 	
 	CurrentItemAttach = Item;
 	Item->SetOwner(this);
+}
+
+void ACharacterprincipal::FinalizarYAtaqueRanged()
+{
+	if (IndicadorRanged && IndicadorRanged->IsVisible())
+	{
+		IndicadorRanged->SetVisibility(false);
+
+		FRotator DireccionDisparo = GetActorRotation(); 
+
+		EjecutarDisparoRanged(DireccionDisparo);
+	}
+}
+
+void ACharacterprincipal::ActualizarCamara()
+{
+	UCameraComponent* Camara = FindComponentByClass<UCameraComponent>();
+	USpringArmComponent* SpringArm = FindComponentByClass<USpringArmComponent>();
+
+	bool bFOVTerminado = true;
+	bool bDistanciaTerminada = true;
+
+	if (Camara)
+	{
+		if (FMath::IsNearlyEqual(Camara->FieldOfView, TargetFOV, 0.1f))
+		{
+			Camara->SetFieldOfView(TargetFOV);
+		}
+		else
+		{
+			Camara->SetFieldOfView(FMath::FInterpTo(Camara->FieldOfView, TargetFOV, 0.01f, VelocidadTransicionFOV));
+			bFOVTerminado = false;
+		}
+	}
+
+	if (SpringArm)
+	{
+		if (FMath::IsNearlyEqual(SpringArm->TargetArmLength, TargetDistancia, 0.5f))
+		{
+			SpringArm->TargetArmLength = TargetDistancia;
+		}
+		else
+		{
+			SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, TargetDistancia, 0.01f, VelocidadTransicionDistancia);
+			bDistanciaTerminada = false;
+		}
+	}
+
+	if (bFOVTerminado && bDistanciaTerminada)
+	{
+		GetWorldTimerManager().ClearTimer(TimerTransicionCamara);
+	}
+}
+
+void ACharacterprincipal::OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode)
+{
+	Super::OnMovementModeChanged(PrevMovementMode, PreviousCustomMode);
+	
+	if (!GetCharacterMovement()) return;
+
+	if (PrevMovementMode == MOVE_Walking && GetCharacterMovement()->MovementMode == MOVE_Falling)
+	{
+		if (SaltosRealizados == 0)
+		{
+			bCoyoteTimeActivo = true;
+			GetWorldTimerManager().SetTimer(TimerCoyote, this, &ACharacterprincipal::FinalizarCoyoteTime, TiempoCoyote, false);
+		}
+	}
+
+	if (GetCharacterMovement()->MovementMode == MOVE_Walking)
+	{
+		SaltosRealizados = 0;
+		bCoyoteTimeActivo = false;
+		GetWorldTimerManager().ClearTimer(TimerCoyote);
+
+		TargetDistancia = DistanciaNormal;
+		TargetFOV = FOVNormal;
+		GetWorldTimerManager().SetTimer(TimerTransicionCamara, this, &ACharacterprincipal::ActualizarCamara, 0.01f, true);
+	}
 }

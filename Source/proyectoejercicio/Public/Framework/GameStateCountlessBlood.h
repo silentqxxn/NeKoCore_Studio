@@ -10,6 +10,7 @@
 /**
  * 
  */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSharedProgressUpdated);
 UCLASS()
 class PROYECTOEJERCICIO_API AGameStateCountlessBlood : public AGameStateBase
 {
@@ -18,15 +19,25 @@ public:
 	AGameStateCountlessBlood();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Quest")
-	TArray<FQuestProgress> SharedQuestProgress;
-
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	void AddSharedProgress(FName QuestID, ETiposDeObjetivo Type, int32 Amount);
 	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Quest")
+	int32 GetSharedProgress(FName QuestID) const;
+	
+	UPROPERTY(BlueprintAssignable, Category = "Misiones Compartidas")
+	FOnSharedProgressUpdated OnSharedProgressUpdated;
+	
+protected:
+
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Partida")
 	bool bPartidaFinalizada;
 	
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Quest")
-	int32 GetSharedProgress(FName QuestID) const;
+	UPROPERTY(ReplicatedUsing = OnRep_SharedQuestProgress)
+	TArray<FQuestProgress> SharedQuestProgress;
+	
+	UFUNCTION()
+	void OnRep_SharedQuestProgress();
+	
+
 };

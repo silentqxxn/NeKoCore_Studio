@@ -78,7 +78,7 @@ void AItemRecogible::NotifyActorBeginOverlap(AActor* OtherActor)
 	Super::NotifyActorBeginOverlap(OtherActor);
 	
 	if (!HasAuthority()) return;
-	if (!OtherActor) return;
+	if (!OtherActor || !OtherActor->Implements<UInterfazRecogeItems>()) return;
 	
 	Interactuar(OtherActor);
 }

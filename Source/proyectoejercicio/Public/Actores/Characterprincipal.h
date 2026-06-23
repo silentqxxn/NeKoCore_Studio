@@ -10,7 +10,10 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "interfaz/InterfazAttach.h"
 #include "interfaz/InterfazCrafteo.h"
+#include "Camera/CameraComponent.h"
 #include "interfaz/InterfazRecogeItems.h"
+#include "Components/DecalComponent.h"
+#include "componentes/ComponenteEstadisticas.h"
 #include "componentes/ComponenteArmas.h"
 #include "Characterprincipal.generated.h"
 
@@ -19,6 +22,7 @@ class UInputAction;
 class UInputMappingContext;
 class AWeaponMaster;
 class UComponenteInventario; 
+class UComponenteEstadisticas;
 struct FItemData;
 class UComponenteCrafteo;
 class USkeletalMeshComponent;
@@ -104,6 +108,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ClearItemInteractuable(AActor* Item);
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Combate")
+	void EjecutarDisparoRanged(FRotator Direccion);
+	
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -121,11 +129,123 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* IA_Interactuar;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputAction* IA_Correr;
+	
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* IA_Saltar;
+	
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* IA_Dash;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movimiento")
+	float MultiplicadorCorrer = 1.5f;
+	
+	void EmpezarACorrer();
+	void DejarDeCorrer();
+	
+	UFUNCTION(Server, Reliable)
+	void Server_SetVelocidadMax(float NuevaVelocidad);
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Componentes")
 	UComponenteExperiencia* CompExperiencia;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input") 
+	UInputAction* ActionAtaqueRanged;
+	
 	void Move(const FInputActionValue& Value);
 	void TryInteract();
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Componentes")
+	class UComponenteEstadisticas* CompEstadisticas;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Puntería")
+	UDecalComponent* IndicadorRanged;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puntería")
+	UMaterialInterface* MaterialFlechaPunteria;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puntería")
+	float RangoFlecha = 800.f;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FX al Correr")
+	class UNiagaraComponent* EfectoCorrerNiagara;
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetEfectoCorrer(bool bActivo);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_SetEfectoCorrer(bool bActivo);
+
+	void IniciarPunteriaRanged();
+	void FinalizarYAtaqueRanged();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FX al Correr")
+	float FOVNormal = 90.0f; 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FX al Correr")
+	float FOVCorrer = 110.0f; 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FX al Correr")
+	float VelocidadTransicionFOV = 10.0f; 
+	float TargetFOV;
+
+	FTimerHandle TimerTransicionCamara;
+	
+	virtual void OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode) override;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FX al saltar")
+	float DistanciaNormal = 400.0f; 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FX al saltar")
+	float DistanciaSalto = 550.0f;  
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FX al saltar")
+	float VelocidadTransicionDistancia = 5.0f; 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FX al saltar")
+	float FOVSalto = 100.0f;
+	
+	float TargetDistancia;
+	void ActualizarCamara();
+
+	int32 SaltosRealizados = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Salto")
+	int32 MaximoDeSaltos = 2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Salto")
+	float TiempoCoyote = 0.2f;
+
+	bool bCoyoteTimeActivo = false;
+
+	FTimerHandle TimerCoyote;
+
+	void IntentarSaltar();
+	void IntentarDetenerSalto();
+
+	void FinalizarCoyoteTime();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash")
+	float FuerzaDash = 2500.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash")
+	float CooldownDash = 1.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash")
+	float DuracionDash = 0.2f; 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash")
+	float FOVDash = 120.0f;
+	FTimerHandle TimerDuracionDash;
+	
+	float FriccionOriginal; 
+
+	void FinalizarDash();
+	
+	bool bPuedeDashear = true;
+	
+	FTimerHandle TimerCooldownDash;
+	
+	void EjecutarDash();
+	void ResetearDash();
+	
+	UFUNCTION(Server, Reliable)
+	void Server_EjecutarDash(FVector FuerzaEmpuje);
 
 private:
 	void DropCurrentWeapon();

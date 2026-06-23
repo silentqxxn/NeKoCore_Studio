@@ -36,23 +36,17 @@ void UComponenteArmas::Server_RecogerArma_Implementation(AWeaponMaster* Arma)
 	if (Arma->SlotEquipable == EEquipableSlot::Ninguno) return;
 
 	AWeaponMaster*& SlotEquipado = GetSlotEquipado(Arma->SlotEquipable);
-	//AWeaponMaster*& SlotGuardado = GetSlotGuardado(Arma->SlotEquipable);
 
-	if (!SlotEquipado)
+	if (SlotEquipado)
 	{
-		Server_SoltarEquipada_Implementation(Arma->SlotEquipable);
+		Server_SoltarEquipada_Implementation(Arma->SlotEquipable); 
 	}
-	/*else if (!SlotGuardado)
-	{
-		AttacharArma(Arma, Arma->SocketGuardado);
-		SlotGuardado = Arma;
-	}
-	*/
-	AttacharArma(Arma, Arma->SocketName); 
+
+	AttacharArma(Arma, Arma->SocketName);
 	SlotEquipado = Arma;
-	// ambos llenos → queda en el mundo
 
 	if (GetOwner()) GetOwner()->ForceNetUpdate();
+
 }
 /*
 void UComponenteArmas::Server_IntercambiarArma_Implementation(EEquipableSlot Slot)
@@ -87,7 +81,6 @@ void UComponenteArmas::Server_SoltarEquipada_Implementation(EEquipableSlot Slot)
 	if (Slot == EEquipableSlot::Ninguno) return;
 
 	AWeaponMaster*& SlotEquipado = GetSlotEquipado(Slot);
-	//AWeaponMaster*& SlotGuardado = GetSlotGuardado(Slot);
 	if (!SlotEquipado) return;
 
 	ACharacter* Owner = Cast<ACharacter>(GetOwner());
@@ -95,21 +88,18 @@ void UComponenteArmas::Server_SoltarEquipada_Implementation(EEquipableSlot Slot)
 
 	AWeaponMaster* ArmaASoltar = SlotEquipado;
 
-	// 1. Limpiamos variables
 	ArmaASoltar->bEquipado = false;
 	ArmaASoltar->SetOwner(nullptr);
 
-	//Multicast_DetachVisual(ArmaASoltar);
+	Multicast_DetachVisual(ArmaASoltar);
 
 	FVector DropLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * 120.f;
 	ArmaASoltar->SetActorLocation(DropLocation);
 	ArmaASoltar->SetReplicatingMovement(true);
     
-	ArmaASoltar->ItemMesh->SetSimulatePhysics(true);
-	ArmaASoltar->ItemMesh->SetEnableGravity(true);
-	ArmaASoltar->ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-    
-	// Ignorar colisiones de personajes para evitar tirones
+	ArmaASoltar->ItemMesh->SetSimulatePhysics(false);
+	ArmaASoltar->ItemMesh->SetEnableGravity(false);
+	ArmaASoltar->ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);    
 	ArmaASoltar->ItemMesh->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Ignore); 
 	ArmaASoltar->ItemMesh->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECR_Ignore);
     
@@ -117,11 +107,34 @@ void UComponenteArmas::Server_SoltarEquipada_Implementation(EEquipableSlot Slot)
 	ArmaASoltar->EnablePickupDelayed(1.0f);
 
 	SlotEquipado = nullptr;
-	
+
 	Owner->ForceNetUpdate();
 }
 
 
+void UComponenteArmas::Multicast_DetachVisual_Implementation(AWeaponMaster* Arma)
+{
+	if (!Arma) return;
+    
+	Arma->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+}
+
+void UComponenteArmas::Multicast_AttachVisual_Implementation(AWeaponMaster* Arma, FName Socket)
+{
+	if (!Arma) return;
+	ACharacter* OwnerChar = Cast<ACharacter>(GetOwner());
+	if (!OwnerChar) return;
+
+	Arma->ItemMesh->SetSimulatePhysics(false);
+	Arma->ItemMesh->SetEnableGravity(false);
+	Arma->ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Arma->SphereCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    
+	Arma->SetReplicatingMovement(false);
+
+	FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepRelative, true);
+	Arma->AttachToComponent(OwnerChar->GetMesh(), Rules, Socket);
+}
 
 AWeaponMaster*& UComponenteArmas::GetSlotEquipado(EEquipableSlot Slot)
 {
@@ -148,21 +161,20 @@ void UComponenteArmas::AttacharArma(AWeaponMaster* Arma, FName Socket)
 	ACharacter* Owner = Cast<ACharacter>(GetOwner());
 	if (!Arma || !Owner) return;
 
-	Arma->SetReplicatingMovement(false);
+	Arma->bEquipado = true;
+	Arma->SetOwner(Owner);
+	Arma->SetReplicatingMovement(false); 
+
 	Arma->ItemMesh->SetSimulatePhysics(false);
 	Arma->ItemMesh->SetEnableGravity(false);
 	Arma->ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Arma->SphereCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	FAttachmentTransformRules Rules(
-		EAttachmentRule::SnapToTarget,
-		EAttachmentRule::SnapToTarget,
-		EAttachmentRule::KeepRelative,
-		true);
+	FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepRelative, true);
 	Arma->AttachToComponent(Owner->GetMesh(), Rules, Socket);
 
-	Arma->bEquipado = true;
-	Arma->SetOwner(Owner);
+	Multicast_AttachVisual(Arma, Socket);
+
 }
 
 // Called when the game starts
