@@ -39,12 +39,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	void ProgressObjective(FName QuestID, ETiposDeObjetivo Type, int32 Amount);
 
-	//UPROPERTY(Replicated, BlueprintReadOnly, Category = "Quest")
-	//TArray<FQuestProgress> IndividualProgress;
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Misiones")
+	void Server_TurnInQuest(FName QuestID);
+		
+	
 	
 	UPROPERTY(ReplicatedUsing = OnRep_IndividualProgress, BlueprintReadOnly, Category = "Quest")
 	TArray<FQuestProgress> IndividualProgress;
 
+	UFUNCTION(Client, Reliable)
+	void Client_MisionCompletada(FName QuestID);
+	
 	UFUNCTION()
 	void OnRep_IndividualProgress();
 	
@@ -60,14 +65,16 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Quest")
 	FOnQuestListUpdated OnQuestListUpdated;
 	
-	//////////////
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Quest")
 	bool IsObjectiveStageComplete(FName ObjectiveID) const;
 
 	bool FindStageForObjective(FName ObjectiveID, FName& OutQuestID, FQuestStage& OutStage) const;
-	int32 GetCurrentObjectiveProgress(FName ObjectiveID, ETiposDeObjetivo Type) const;
 	
-
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Misiones")
+	void Server_AcceptQuest(FName QuestID);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Quest")
+	int32 GetCurrentObjectiveProgress(FName ObjectiveID, ETiposDeObjetivo Type) const;
 	
 protected:
 	// Called when the game starts

@@ -8,6 +8,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnVidaCambia, float, VidaActual, float, VidaMaxima);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPersonajeMuere);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPersonajeRevive);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROYECTOEJERCICIO_API UComponenteEstadisticas : public UActorComponent
@@ -61,6 +62,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Estadisticas")
 	void Server_Revivir();
+	
+	UPROPERTY(BlueprintAssignable, Category = "Estadisticas")
+	FOnPersonajeRevive OnPersonajeRevive;
 	
 	UPROPERTY(ReplicatedUsing = OnRep_EstaMuerto, BlueprintReadOnly, Category = "Estadisticas")
 	bool bEstaMuerto = false;

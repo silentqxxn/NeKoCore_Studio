@@ -59,9 +59,8 @@ void UComponenteEstadisticas::Server_Revivir_Implementation()
 	VidaActual = VidaMaximaActual;
 	bEstaMuerto = false;
 	OnRep_VidaActual();
+	OnRep_EstaMuerto();
 	
-	UE_LOG(LogTemp, Warning, TEXT("Server_Revivir EJECUTADO. Owner=%s VidaActual=%.1f VidaMax=%.1f"),
-		*GetNameSafe(GetOwner()), VidaActual, VidaMaximaActual);
 }
 
 // Called when the game starts
@@ -121,11 +120,14 @@ void UComponenteEstadisticas::OnRep_VelocidadActual()
 
 void UComponenteEstadisticas::OnRep_EstaMuerto()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[%s] OnRep_EstaMuerto ejecutado. bEstaMuerto=%d"),
-	   GetOwner()->HasAuthority() ? TEXT("SERVER") : TEXT("CLIENT"), bEstaMuerto);
+	
 	if (bEstaMuerto)
 	{
 		OnPersonajeMuere.Broadcast();
+	}
+	else
+	{
+		OnPersonajeRevive.Broadcast();
 	}
 }
 
