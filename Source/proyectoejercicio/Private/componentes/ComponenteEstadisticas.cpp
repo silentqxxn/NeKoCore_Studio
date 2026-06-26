@@ -63,6 +63,15 @@ void UComponenteEstadisticas::Server_Revivir_Implementation()
 	
 }
 
+void UComponenteEstadisticas::Server_Curar_Implementation(float Cantidad)
+{
+	if (bEstaMuerto || VidaActual >= VidaMaximaActual) return;
+
+	VidaActual = FMath::Clamp(VidaActual + Cantidad, 0.f, VidaMaximaActual);
+    
+	OnRep_VidaActual();
+}
+
 // Called when the game starts
 void UComponenteEstadisticas::BeginPlay()
 {

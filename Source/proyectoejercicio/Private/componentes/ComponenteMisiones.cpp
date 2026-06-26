@@ -18,7 +18,7 @@ UComponenteMisiones::UComponenteMisiones()
     SetIsReplicatedByDefault(true);
 	
 }
-
+/*
 void UComponenteMisiones::AcceptQuest_Implementation(FName QuestID)
 {
     if (!QuestDataTable) return;
@@ -34,7 +34,7 @@ void UComponenteMisiones::AcceptQuest_Implementation(FName QuestID)
         OnQuestListUpdated.Broadcast();
     }
 }
-
+*/
 void UComponenteMisiones::ProgressObjective(FName QuestID, ETiposDeObjetivo Type, int32 Amount)
 {
     if (!GetOwner()->HasAuthority()) return;
@@ -83,6 +83,10 @@ void UComponenteMisiones::ProgressObjective(FName QuestID, ETiposDeObjetivo Type
         }
     }
 }
+void UComponenteMisiones::OnRep_Progress()
+{
+    OnQuestListUpdated.Broadcast();
+}
 
 void UComponenteMisiones::Server_TurnInQuest_Implementation(FName QuestID)
 {
@@ -90,8 +94,7 @@ void UComponenteMisiones::Server_TurnInQuest_Implementation(FName QuestID)
 
     if (!IsQuestCompleted(QuestID))
     {
-        UE_LOG(LogTemp, Error, TEXT("¡ALERTA! El servidor dice que la misión %s NO está completa. El progreso no coincide."), *QuestID.ToString());
-        return; 
+        
     }
 
     if (QuestDataTable)
@@ -128,10 +131,12 @@ void UComponenteMisiones::Server_TurnInQuest_Implementation(FName QuestID)
     }
 
     ActiveQuests.Remove(QuestID);
+    CompletedQuests.Add(QuestID);
     IndividualProgress.RemoveAll([&](const FQuestProgress& Item) { return Item.QuestID == QuestID; });
    
     OnQuestCompleted.Broadcast(QuestID);
     OnQuestListUpdated.Broadcast();
+    Client_MisionCompletada(QuestID);
     
 }
 
@@ -144,7 +149,7 @@ void UComponenteMisiones::OnRep_IndividualProgress()
 {
     OnQuestListUpdated.Broadcast();
 }
-
+/*
 void UComponenteMisiones::TurnInQuest(FName QuestID)
 {
     if (!GetOwner()->HasAuthority()) return;
@@ -161,6 +166,7 @@ void UComponenteMisiones::TurnInQuest(FName QuestID)
         Client_MisionCompletada(QuestID); 
     }
 }
+*/
 
 bool UComponenteMisiones::IsQuestCompleted(FName QuestID) const
 {
@@ -207,22 +213,16 @@ void UComponenteMisiones::Server_AcceptQuest_Implementation(FName QuestID)
 {
     if (!QuestDataTable) return;
 
-    // 2. Seguridad: Evitamos que el jugador acepte la misma misión dos veces
     if (ActiveQuests.Contains(QuestID)) return;
 
-    // 3. Verificamos que la misión exista en la base de datos
     FQuestData* QuestData = QuestDataTable->FindRow<FQuestData>(QuestID, TEXT("Context_AcceptQuest"));
 
     if (QuestData)
     {
-        // 4. ¡AQUÍ OCURRE LA MAGIA! El Servidor anota la misión en su registro
         ActiveQuests.Add(QuestID);
         
-        // 5. Actualizamos la interfaz del servidor (El cliente se actualizará solo gracias a tu OnRep_ActiveQuests)
         OnQuestListUpdated.Broadcast();
-        
-        // Un log verde para que festejes cuando lo veas funcionar
-        UE_LOG(LogTemp, Warning, TEXT("¡ÉXITO! El Servidor le dio la misión %s al jugador correctamente."), *QuestID.ToString());
+       
     }
 }
 
@@ -248,11 +248,7 @@ void UComponenteMisiones::BeginPlay()
 {
     Super::BeginPlay();
     
-    if (GetOwner()->HasAuthority()) {
-        UE_LOG(LogTemp, Warning, TEXT("Componente existe en SERVER"));
-    } else {
-        UE_LOG(LogTemp, Warning, TEXT("Componente existe en CLIENTE"));
-    }
+  
 }
 
 void UComponenteMisiones::TickComponent(float DeltaTime, ELevelTick TickType,
@@ -276,6 +272,7 @@ void UComponenteMisiones::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(UComponenteMisiones, ActiveQuests);
     DOREPLIFETIME(UComponenteMisiones, IndividualProgress);
+    DOREPLIFETIME(UComponenteMisiones, CompletedQuests);
 }
 
 void UComponenteMisiones::OnRep_ActiveQuests()

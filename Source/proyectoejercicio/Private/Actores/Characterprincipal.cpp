@@ -142,6 +142,7 @@ void ACharacterprincipal::Tick(float DeltaTime)
 		
 }
 
+
 void ACharacterprincipal::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -314,6 +315,48 @@ void ACharacterprincipal::ResetearDash()
 	bPuedeDashear = true;
 }
 
+void ACharacterprincipal::PresionTeclaCuracion()
+{
+	FName IDPocion = TEXT("PocionDeVida");
+	float PoderCuracion = 30.f;
+
+	if (this->Implements<UInterfazConsumible>())
+	{
+		IInterfazConsumible::Execute_ConsumirItem(this, IDPocion, PoderCuracion);
+	}
+}
+
+bool ACharacterprincipal::ConsumirItem_Implementation(FName ItemID, float CantidadEfecto)
+{
+	if (!CompInventario || !CompEstadisticas) return false;
+
+	FItemData DatosItem;
+	if (CompInventario->QueryInventory(ItemID, DatosItem) && DatosItem.Cantidad > 0)
+	{
+		if (CompEstadisticas->VidaActual < CompEstadisticas->VidaMaximaActual && !CompEstadisticas->bEstaMuerto)
+		{
+			Server_ProcesarConsumoInterface(ItemID, CantidadEfecto);
+			return true;
+		}
+	}
+	return false;
+}
+
+void ACharacterprincipal::Server_ProcesarConsumoInterface_Implementation(FName ItemID, float CantidadEfecto)
+{
+	if (!CompInventario || !CompEstadisticas) return;
+
+	FItemData DatosItem;
+	if (CompInventario->QueryInventory(ItemID, DatosItem) && DatosItem.Cantidad > 0)
+	{
+		CompInventario->Server_QuitarItem_Implementation(ItemID, 1);
+
+		float NuevaVida = FMath::Clamp(CompEstadisticas->VidaActual + CantidadEfecto, 0.f, CompEstadisticas->VidaMaximaActual);
+		CompEstadisticas->VidaActual = NuevaVida;
+        
+		CompEstadisticas->OnRep_VidaActual();
+	}
+}
 
 void ACharacterprincipal::DropCurrentWeapon()
 {
@@ -385,6 +428,10 @@ void ACharacterprincipal::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		if (IA_Dash)
 		{
 			EI->BindAction(IA_Dash, ETriggerEvent::Started, this, &ACharacterprincipal::EjecutarDash);
+		}
+		if (IA_Curar)
+		{
+			EI->BindAction(IA_Curar, ETriggerEvent::Started, this, &ACharacterprincipal::PresionTeclaCuracion);
 		}
 	}
 }
@@ -465,52 +512,6 @@ void ACharacterprincipal::ClearItemInteractuable(AActor* Item)
 
 void ACharacterprincipal::TryInteract()
 {
-	/*TArray<AActor*> Overlapping;
-	GetOverlappingActors(Overlapping, AActor::StaticClass());
-	
-	bool bInteractuoConAlgo = false;
-	
-	for (AActor* Actor : Overlapping)
-	{
-		if (AWeaponMaster* Weapon = Cast<AWeaponMaster>(Actor))
-		{
-			if (Weapon != CurrentWeapon)
-			{
-				Server_EquipWeapon(Weapon);
-				bInteractuoConAlgo = true;
-				break;
-			}
-		}
-		else if (AItemMasterAttach* ItemAttach = Cast<AItemMasterAttach>(Actor))
-		{
-			ItemAttach->EquiparItem(this);
-			bInteractuoConAlgo = true;
-			break;
-		}
-		else if (AItemRecogible* Item = Cast<AItemRecogible>(Actor))
-		{
-			Item->Interactuar(this);
-			bInteractuoConAlgo = true;
-			break;
-		}
-	
-		*/
-		/*
-		else if (AActorMision* Mision = Cast<AActorMision>(Actor)) // Reemplazá por tu clase
-		{
-			Mision->Interactuar(); // O la función que uses para aceptar la misión
-			bInteractuoConAlgo = true;
-			break;
-		}
-		*/
-	
-
-	/*if (!bInteractuoConAlgo && CurrentWeapon)
-	{
-		Server_DropWeapon();
-	}*/
-	
-
 	
 	if (CompCrafteo && CompCrafteo->GetFogataCercana())
 	{

@@ -24,10 +24,7 @@ void UComponenteArmas::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UComponenteArmas, ArmaManoDerecha);
 	DOREPLIFETIME(UComponenteArmas, ArmaManoIzquierda);
 	DOREPLIFETIME(UComponenteArmas, ArmaEspalda);
-	/*DOREPLIFETIME(UComponenteArmas, ArmaManoDerechaGuardada);
-	DOREPLIFETIME(UComponenteArmas, ArmaManoIzquierdaGuardada);
-	DOREPLIFETIME(UComponenteArmas, ArmaEspaldaGuardada);
-*/
+	
 }
 
 void UComponenteArmas::Server_RecogerArma_Implementation(AWeaponMaster* Arma)
@@ -48,34 +45,7 @@ void UComponenteArmas::Server_RecogerArma_Implementation(AWeaponMaster* Arma)
 	if (GetOwner()) GetOwner()->ForceNetUpdate();
 
 }
-/*
-void UComponenteArmas::Server_IntercambiarArma_Implementation(EEquipableSlot Slot)
-{
-	if (Slot == EEquipableSlot::Ninguno) return;
 
-	AWeaponMaster*& SlotEquipado = GetSlotEquipado(Slot);
-	//AWeaponMaster*& SlotGuardado = GetSlotGuardado(Slot);
-
-	if (!SlotGuardado) return;
-
-	AWeaponMaster* Anterior = SlotEquipado;
-
-	AttacharArma(SlotGuardado, SlotGuardado->SocketName);
-	SlotEquipado = SlotGuardado;
-
-	if (Anterior)
-	{
-		AttacharArma(Anterior, Anterior->SocketGuardado);
-		SlotGuardado = Anterior;
-	}
-	else
-	{
-		SlotGuardado = nullptr;
-	}
-
-	if (GetOwner()) GetOwner()->ForceNetUpdate();
-}
-*/
 void UComponenteArmas::Server_SoltarEquipada_Implementation(EEquipableSlot Slot)
 {
 	if (Slot == EEquipableSlot::Ninguno) return;
@@ -145,16 +115,7 @@ AWeaponMaster*& UComponenteArmas::GetSlotEquipado(EEquipableSlot Slot)
 	default:                            return ArmaManoDerecha;
 	}
 }
-/*
-AWeaponMaster*& UComponenteArmas::GetSlotGuardado(EEquipableSlot Slot)
-{
-	switch (Slot)
-	{
-	case EEquipableSlot::ManoIzquierda: return ArmaManoIzquierdaGuardada;
-	case EEquipableSlot::Espalda:       return ArmaEspaldaGuardada;
-	default:                            return ArmaManoDerechaGuardada;
-	}
-}*/
+
 
 void UComponenteArmas::AttacharArma(AWeaponMaster* Arma, FName Socket)
 {

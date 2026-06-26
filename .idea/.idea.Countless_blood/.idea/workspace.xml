@@ -19,166 +19,63 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="31aaddf7-e86e-4651-921e-da2bfe27bebd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Content/Actores/c++Atachable/BP_ARMASItemMasterAttach_Child1.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Actores/c++Atachable/BP_ARMASItemMasterAttach_Child2.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Actores/c++Atachable/BP_Escudo1.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Actores/c++Atachable/BP_Escudo2.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Actores/c++Atachable/BP_Escudo3.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Characters/Chrt_Condesa/Animaciones/muerte/ANIM_CONDESA_Anim_Anim_death_001_Montage.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Datatable/DT_DataProgreso.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Datatable/DT_ProgresoNivel.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/FX/Mat_AtaqueDistancia.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/FX/pngegg.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/Ancient_Fantasy_Sword_–_Stylized_Weapon_3D_Model/source_fbx/Materials/Sword.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/Ancient_Fantasy_Sword_–_Stylized_Weapon_3D_Model/source_fbx/StaticMeshes/source_fbx.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/Ancient_Fantasy_Sword_–_Stylized_Weapon_3D_Model/source_fbx/Textures/source_fbx_texture_0.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/Ancient_Fantasy_Sword_–_Stylized_Weapon_3D_Model/source_fbx/Textures/source_fbx_texture_1.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/Ancient_Fantasy_Sword_–_Stylized_Weapon_3D_Model/source_fbx/Textures/source_fbx_texture_2.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Demo/BP_Demo.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Demo/Material/MF_ProcGrid.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Demo/Material/MI_PrototypeGrid.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Demo/Material/M_PrototypeGrid.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Demo/Texture/TC_StudioReflection-01-Cool.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Demo/Texture/T_GridChecker_A.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/FX/NS_ArrowTrail_Basic.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/FX/NS_ArrowTrail_Basic_02.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/FX/NS_ArrowTrail_Fire.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/FX/NS_ArrowTrail_Fire_02.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/FX/NS_ArrowTrail_Holy.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/FX/NS_ArrowTrail_Ice.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/FX/NS_ArrowTrail_Magic.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/FX/NS_ArrowTrail_Magic_2.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/FX/NS_ArrowTrail_Nature.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/FX/NS_ArrowTrail_Water.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Map/Overview.umap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Material/MF_Function/MF_Texcoord.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Material/MI_Instance/MI_ArrowRibbon_01.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Material/MI_Instance/MI_ArrowRibbon_02.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Material/MI_Instance/MI_Distortion.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Material/MI_Instance/MI_HolyRibbon.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Material/MI_Instance/MI_IceParticle.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Material/MI_Instance/MI_IceParticle1.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Material/MI_Instance/MI_IceRibbon.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Material/MI_Instance/MI_Leaf.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Material/MI_Instance/MI_NatureRibbon.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Material/MI_Instance/MI_Smoke.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Material/MI_Instance/MI_WaterParticle.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Material/MI_Instance/MI_WaterRibbon.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Material/M_Master/M_SimpleParticle.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Material/M_Master/M_SimpleTrail.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Texture/T_Aura.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Texture/T_FireBall.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Texture/T_FlowLoop.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Texture/T_Glow.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Texture/T_Ice.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Texture/T_Leaf.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Texture/T_Noise_01.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Texture/T_Noise_02.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Texture/T_Noise_03.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Texture/T_Noise_04.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Texture/T_Noise_05.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Texture/T_Normal_Noise.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Texture/T_Rocks.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Texture/T_Trail.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Texture/T_Trail_Dust.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Texture/T_WaterSpark.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Texture/T_Water_Splash.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/ArrowTrail/Texture/T_White.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/Axe_Game_Ready_3D_Asset/Axe/Materials/Axe_texture.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/Axe_Game_Ready_3D_Asset/Axe/StaticMeshes/Axe.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/Axe_Game_Ready_3D_Asset/Axe/Textures/Axe_lambert2_BaseColor.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/Axe_Game_Ready_3D_Asset/Axe/Textures/Axe_lambert2_Normal.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/Axe_Game_Ready_3D_Asset/Axe/Textures/Axe_lambert2_Roughness.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/FREE_Fantasy_Hammer/hammer/Materials/Material_003.uasset" afterPathEscaped="$PROJECT_DIR$/Content/Fab/FREE_Fantasy_Hammer🔨/hammer/Materials/Material_003.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/FREE_Fantasy_Hammer/hammer/StaticMeshes/hammer.uasset" afterPathEscaped="$PROJECT_DIR$/Content/Fab/FREE_Fantasy_Hammer🔨/hammer/StaticMeshes/hammer.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/FREE_Fantasy_Hammer/hammer/Textures/texture_pbr_20250901.uasset" afterPathEscaped="$PROJECT_DIR$/Content/Fab/FREE_Fantasy_Hammer🔨/hammer/Textures/texture_pbr_20250901.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/FREE_Fantasy_Hammer/hammer/Textures/texture_pbr_20250901_metallic-texture_pbr_20250901_roughnes.uasset" afterPathEscaped="$PROJECT_DIR$/Content/Fab/FREE_Fantasy_Hammer🔨/hammer/Textures/texture_pbr_20250901_metallic-texture_pbr_20250901_roughnes.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/FREE_Fantasy_Hammer/hammer/Textures/texture_pbr_20250901_normal.uasset" afterPathEscaped="$PROJECT_DIR$/Content/Fab/FREE_Fantasy_Hammer🔨/hammer/Textures/texture_pbr_20250901_normal.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/Medieval_Viking_Sword/Viking_Sword.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/Medieval_Viking_Sword/viking_sword1.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/Medieval_Wooden_Shield___Game_Ready_PBR_Defense_Asset___Low_Poly___Fantasy/shield_m4/Materials/Material_001.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/Medieval_Wooden_Shield___Game_Ready_PBR_Defense_Asset___Low_Poly___Fantasy/shield_m4/StaticMeshes/shield_m4.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/Medieval_Wooden_Shield___Game_Ready_PBR_Defense_Asset___Low_Poly___Fantasy/shield_m4/Textures/Material_001_Albedo.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Fab/Medieval_Wooden_Shield___Game_Ready_PBR_Defense_Asset___Low_Poly___Fantasy/shield_m4/Textures/Material_001_Metallic.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/imputs/IA_Recargar.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/imputs/IA_Stats.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/imputs/IA_TablaMisiones.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/ui/WBP_Municion.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/ui/stats/WBP_Estadisticas.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Estructuras/EFasesBoss.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Private/Actores/MiniBoss.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Private/componentes/ComponenteEstadisticas.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Public/Actores/MiniBoss.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Public/componentes/ComponenteEstadisticas.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Countless_blood/.idea/.gitignore" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Characters/enemigoMele/ABP_EnemigoMele.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Characters/enemigoMele/BP_EnemigoMele.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Characters/enemigoMele/BP_EnemigoMeleVampiro.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Characters/enemigoMele/Crouched_Walking.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Characters/enemigoMele/ENEMIGO_vampiro.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Characters/enemigoMele/ENEMIGO_vampiro_Skeleton.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Characters/enemigoMele/Material_001.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Characters/enemigoMele/Mutant_Idle.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Characters/enemigoMele/Mutant_Punch.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Characters/enemigoMele/Mutant_Punch_Montage.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Characters/enemigoMele/Standing_React_Death_Backward.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Characters/enemigoMele/mat_faceVampiro.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/FX/Murcielagos.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/IA/Mele/BTTask_AtaquemeleVampiro.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/imputs/IA_Curarse.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/ui/menu_inicial/2024_Countless_Blood.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/ui/menu_inicial/UnifrakturCook-Bold.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/ui/menu_inicial/UnifrakturCook-Bold_Font.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/ui/menu_inicial/WBP_MenuPrincipal.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Private/interfaz/InterfazConsumible.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Public/interfaz/InterfazConsumible.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Countless_blood/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Countless_blood/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Actores/BP_BaladePlata1.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Actores/BP_Ballesta.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Actores/BP_Experiencia.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Actores/BP_Experiencia.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Actores/Crafteo/BP_FogataNueva.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Actores/Crafteo/BP_FogataNueva.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Actores/Crafteo/BP_ItemPadreCrafteable.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Actores/Crafteo/BP_ItemPadreCrafteable.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Actores/Game/Character/BP_Condesa.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Actores/Game/Character/BP_Condesa.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/BP_PlayerControllerNuevo.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/BP_PlayerControllerNuevo.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Actores/ModelosInventario/BP_ItemInventario.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Actores/ModelosInventario/BP_ItemInventario_Child_PotionSalud.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Actores/ModelosInventario/BP_ItemInventario_Child_PotionVeneno.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/BP_CartelMision.uasset" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Characters/BP_Character.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/BP_Character.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/BP_EnemigoMele.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/BP_EnemigoMele.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/BP_EnemyBase.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/BP_EnemyBase.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/EnemigoDistancia/ABP_Monja.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/EnemigoDistancia/ABP_Monja.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/EnemigoDistancia/BP_EnemigoDistancia.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/EnemigoDistancia/BP_EnemigoDistancia.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/BP_Fogata.uasset" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Characters/EnemigoDistancia/BP_EnemigoDistanciaMision1.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/EnemigoDistancia/BP_EnemigoDistanciaMision1.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/EnemigoDistancia/BP_Proyectil.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/EnemigoDistancia/BP_Proyectil.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/EnemigoDistancia/NewFolder/ENEMIGO_DISTANCIA_MONJA_Anim_Anim_Enemy_Monja_Shoot_v2_Montage.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/EnemigoDistancia/NewFolder/ENEMIGO_DISTANCIA_MONJA_Anim_Anim_Enemy_Monja_Shoot_v2_Montage.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/EnemigoDistancia/animaciones/BlendSpaceMonja.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/EnemigoDistancia/animaciones/ENEMIGO_DISTANCIA_MONJA_Anim_rigmonja_Anim_Enemy_Monja_Atack.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/EnemigoDistancia/animaciones/ENEMIGO_DISTANCIA_MONJA_Anim_rigmonja_Anim_Enemy_Monja_Atack_Montage.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/EnemigoDistancia/animaciones/ENEMIGO_DISTANCIA_MONJA_Skeleton.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/EnemigoDistancia/animaciones/ENEMIGO_DISTANCIA_MONJA_Skeleton.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Datatable/DT_QuestData.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Datatable/DT_QuestData.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/GM_Player.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GM_Player.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/IA/Mele/AI_ControllerDistanciaMonja.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/IA/Mele/AI_ControllerMele.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/IA/Mele/BTTask_DisparoEnemigo.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/IA/Mele/BTTask_DisparoEnemigo.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/IA/Mele/BTTask_DisparoEnemigoDistanciaMision.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/IA/Mele/BTTask_DisparoEnemigoDistanciaMision.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/IA/Mele/BTTask_EncontrarPunto.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/IA/Mele/BTTask_EncontrarPunto.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/IA/Mele/IA_EnemigoDistanciaMonja.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/IA/Mele/IA_EnemigoDistanciaMonja.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Sistemas_RPG/DT_ProgresoNivel.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/componente/BP_ComponenteExperiencia.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/componente/BP_ComponenteExperiencia.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/componente/BP_ComponenteStats.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/componente/BP_ComponenteStats.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/componente/BP_ComponenteVida.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/componente/BP_ComponenteVida.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/FX/Mat_Murcielago.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/FX/Mat_Murcielago.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/FX/NS_Alas.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/FX/NS_Alas.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/FX/NewNiagaraSystem.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/FX/aeb1ac7aaa3479766bdd12d3d6e8f827-murcielago-con-alas.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/FX/aeb1ac7aaa3479766bdd12d3d6e8f827-murcielago-con-alas_Sprite.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/IA/Mele/BTTask_AtaquemeleMonja.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/IA/Mele/BTTask_AtaquemeleMonja.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/IA/Mele/IA_EnemigMele.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/IA/Mele/IA_EnemigMele.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/MapaMenuInicio.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/MapaMenuInicio.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/componente/BP_ComponenteInventario.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/componente/BP_ComponenteStats.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/componente/BP_QuestGiverComponent.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/componente/BP_QuestGiverComponent.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/imputs/IMC_CountlessBlood.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/imputs/IMC_CountlessBlood.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/interfase/BPI_AtaqueMele.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/interfase/BPI_AtaqueMele.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/interfase/BPI_Experiencia.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/interfase/BPI_Experiencia.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/interfase/BPI_InteractionQuest.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/interfase/BPI_InteractionQuest.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/mapa1.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/mapa1.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/pickups/actores/BPChild_MasterPickup_Arma.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/pickups/actores/BPChild_MasterPickup_Arma.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/quest/actores/BP_InteractuarMision.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/quest/actores/BP_InteractuarMision.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/quest/actores/BP_LocacionMision.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/quest/actores/BP_LocacionMision.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/quest/actores/BP_NPC.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/quest/actores/BP_NPC.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/quest/actores/BP_ProyectilDistancia.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/quest/actores/BP_ProyectilDistancia.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/quest/actores/BP_QuestBase.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/quest/actores/BP_QuestBase.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/quest/actores/BP_Targetmision.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/quest/actores/BP_Targetmision.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ui/WBP_ui.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ui/WBP_ui.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ui/WBP_MenuPrincipal.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ui/WBP_MenuPrincipal.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/ui/questUI/WBP_EntradaObjetivos.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ui/questUI/WBP_EntradaObjetivos.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ui/questUI/WBP_MisionesNPC.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ui/questUI/WBP_MisionesNPC.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ui/questUI/WBP_NotificaLocacion.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ui/questUI/WBP_NotificaLocacion.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ui/questUI/WBP_Tracker.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ui/questUI/WBP_Tracker.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ui/questUI/WBP_Recompensa.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ui/questUI/WBP_Recompensa.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/ui/questUI/WBP_VentanaMisiones.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ui/questUI/WBP_VentanaMisiones.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Countless_blood.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Countless_blood.sln.DotSettings.user" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/Estructuras/FExperienciaData.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Estructuras/FExperienciaData.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/Private/Actores/Characterprincipal.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Private/Actores/Characterprincipal.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/Private/Actores/ItemRecogible.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Private/Actores/ItemRecogible.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/Private/Actores/WeaponMaster.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Private/Actores/WeaponMaster.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/Private/Framework/GameStateCountlessBlood.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Private/Framework/GameStateCountlessBlood.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/Private/Actores/ItemMasterAttach.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Private/Actores/ItemMasterAttach.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/Private/componentes/ComponenteArmas.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Private/componentes/ComponenteArmas.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/Private/componentes/ComponenteExperiencia.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Private/componentes/ComponenteExperiencia.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/Private/componentes/ComponenteInventario.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Private/componentes/ComponenteInventario.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/Private/componentes/ComponenteEstadisticas.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Private/componentes/ComponenteEstadisticas.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/Private/componentes/ComponenteMisiones.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Private/componentes/ComponenteMisiones.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/Public/Actores/Characterprincipal.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Public/Actores/Characterprincipal.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/Public/Actores/WeaponMaster.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Public/Actores/WeaponMaster.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/Public/Framework/GameStateCountlessBlood.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Public/Framework/GameStateCountlessBlood.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/Public/componentes/ComponenteArmas.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Public/componentes/ComponenteArmas.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/Public/componentes/ComponenteExperiencia.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Public/componentes/ComponenteExperiencia.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/Public/Actores/MiniBoss.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Public/Actores/MiniBoss.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/Public/componentes/ComponenteEstadisticas.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Public/componentes/ComponenteEstadisticas.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/Public/componentes/ComponenteMisiones.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/Public/componentes/ComponenteMisiones.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/proyectoejercicio/proyectoejercicio.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/proyectoejercicio/proyectoejercicio.Build.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -192,7 +89,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="cidr-memory-view://24" root0="FORCE_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://0" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.6/Engine/Source/Runtime/Core/Public/Templates/MemoryOps.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/proyectoejercicio/Estructuras/EFasesBoss.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/proyectoejercicio/Estructuras/EWeaponType.h" root0="FORCE_HIGHLIGHTING" />
@@ -201,10 +98,12 @@
     <setting file="file://$PROJECT_DIR$/Source/proyectoejercicio/Private/Actores/MiniBoss.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/proyectoejercicio/Private/componentes/ComponenteArmas.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/proyectoejercicio/Private/componentes/ComponenteMisiones.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/proyectoejercicio/Private/interfaz/InterfazConsumible.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/proyectoejercicio/Private/wiget/WidgetEquipo.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/proyectoejercicio/Public/Actores/MiniBoss.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/proyectoejercicio/Public/componentes/ComponenteArmas.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/proyectoejercicio/Public/componentes/ComponenteMisiones.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/proyectoejercicio/Public/interfaz/InterfazConsumible.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/proyectoejercicio/Public/wiget/WidgetEquipo.h" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
@@ -351,6 +250,12 @@
       <updated>1782010611816</updated>
       <workItem from="1782010642943" duration="12797000" />
       <workItem from="1782058782473" duration="1967000" />
+      <workItem from="1782419361213" duration="779000" />
+      <workItem from="1782423504017" duration="298000" />
+      <workItem from="1782423976594" duration="2451000" />
+      <workItem from="1782433795361" duration="7858000" />
+      <workItem from="1782489590723" duration="578000" />
+      <workItem from="1782490344622" duration="1614000" />
     </task>
     <servers />
   </component>
