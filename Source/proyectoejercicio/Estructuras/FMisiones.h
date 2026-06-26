@@ -20,16 +20,16 @@ struct FQuestStage
 	FText Description;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quest")
-	ETiposDeObjetivo TipoObjetivo;
+	ETiposDeObjetivo TipoObjetivo = ETiposDeObjetivo::Default;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quest")
-	int32 CantidadRequerida;
+	int32 CantidadRequerida = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quest")
-	bool bIsOptional;
+	bool bIsOptional = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quest")
-	float BonusXP;
+	float BonusXP = 0.0f;;
 };
 
 // STRUCT DE MISIÓN PRINCIPAL 
@@ -48,7 +48,7 @@ struct FQuestData : public FTableRowBase
 	FText TrackingDescripcion;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quest")
-	bool IsMainQuest;
+	bool IsMainQuest  = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quest")
 	TArray<FQuestStage> Stages;

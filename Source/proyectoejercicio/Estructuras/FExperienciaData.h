@@ -25,17 +25,17 @@ struct FProgresoNivelRow : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 SangNecesaria;
+	int32 SangNecesaria = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float PorcentajeHP;
+	float PorcentajeHP = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float PorcentajeAtaque;
+	float PorcentajeAtaque = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float PorcentajeVelocidad;
+	float PorcentajeVelocidad = 0.0f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float PorcentajeDefensa;
+	float PorcentajeDefensa = 0.0f;
 };

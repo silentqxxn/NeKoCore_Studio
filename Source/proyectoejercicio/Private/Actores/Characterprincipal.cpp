@@ -284,8 +284,7 @@ void ACharacterprincipal::FinalizarDash()
 
 void ACharacterprincipal::EjecutarDash()
 {
-	if (!bPuedeDashear || bMovimientoBloqueado || !GetCharacterMovement()) return;
-
+	if (!bPuedeDashear || bMovimientoBloqueado || !GetCharacterMovement() || !GetCharacterMovement()->IsMovingOnGround()) return;
 	bPuedeDashear = false;
 
 	FVector DireccionDash = GetCharacterMovement()->GetLastInputVector();

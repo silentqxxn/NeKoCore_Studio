@@ -4,6 +4,7 @@
 UENUM(BlueprintType)
 enum class ETiposDeObjetivo :uint8
 {
+	Default UMETA(DisplayName = "Default"),
 	Locacion UMETA(DisplayName="Locacion"),
 	Matar UMETA(DisplayName="Matar"),
 	Interactuar UMETA(DisplayName="Interactuar"),

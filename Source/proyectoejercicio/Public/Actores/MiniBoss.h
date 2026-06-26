@@ -37,8 +37,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-
-		
+	UFUNCTION(BlueprintCallable, Category = "Eventos")
+	virtual void Morir();
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_BossMuere();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Boss | Eventos")
+	void BP_AlMorir();
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animaciones")
 	UAnimMontage* Montage_InvocarNube;
 	

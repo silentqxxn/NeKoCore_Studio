@@ -23,8 +23,8 @@ public class proyectoejercicio : ModuleRules
 		PublicIncludePaths.AddRange(new string[]
 		{
 			"proyectoejercicio/Estructuras",
-			"proyectoejercicio/Interfaces",
-			"proyectoejercicio/Componentes"
+			//"proyectoejercicio/Interfaces",
+			//"proyectoejercicio/Componentes"
 
 		});
 	}

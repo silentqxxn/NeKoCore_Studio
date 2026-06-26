@@ -60,6 +60,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats Arma")
 	float DefensaDeEscudo = 5.0f;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
+	float DanioBase = 0.0f;
+	
 	void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 protected:
 	virtual void BeginPlay() override;

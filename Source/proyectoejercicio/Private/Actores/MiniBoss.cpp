@@ -22,6 +22,22 @@ void AMiniBoss::BeginPlay()
 	Super::BeginPlay();
 	VidaActual = VidaMaxima;
 }
+
+void AMiniBoss::Morir()
+{
+	if (HasAuthority())
+	{
+		SetActorEnableCollision(false);
+
+		Multicast_BossMuere();
+	}
+}
+
+void AMiniBoss::Multicast_BossMuere_Implementation()
+{
+	BP_AlMorir();
+}
+
 void AMiniBoss::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -46,8 +62,12 @@ void AMiniBoss::RecibirDanioInterfaz(float CantidadDanio)
 	if (HasAuthority() && CantidadDanio > 0.f && VidaActual > 0.f)
 	{
 		VidaActual = FMath::Clamp(VidaActual - CantidadDanio, 0.f, VidaMaxima);
+		OnRep_VidaActual();    
 
-		OnRep_VidaActual();	
+		if (VidaActual <= 0.f)
+		{
+			Morir(); 
+		}
 	}
 }
 
