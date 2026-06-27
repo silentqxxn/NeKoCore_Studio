@@ -28,7 +28,7 @@ public:
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	float VidaMaxima = 800.f;
 	
-	UFUNCTION(BlueprintCallable, Category = "Boss | Combate")
+	UFUNCTION(BlueprintCallable, Category = "Combate")
 	void RecibirDanioInterfaz(float CantidadDanio);
 	UFUNCTION()
 	void OnRep_VidaActual();
@@ -37,8 +37,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-
-		
+	UFUNCTION(BlueprintCallable, Category = "Eventos")
+	virtual void Morir();
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_BossMuere();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Boss | Eventos")
+	void BP_AlMorir();
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animaciones")
 	UAnimMontage* Montage_InvocarNube;
 	
@@ -49,16 +54,16 @@ protected:
 	TSubclassOf<AActor> ClaseMeteorito;
 	
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Combate | Ranged")
+	UPROPERTY(EditDefaultsOnly, Category = "Combate")
 	UNiagaraSystem* FX_NubeSpawn;
 
 	UPROPERTY()
 	UNiagaraComponent* NubeSpawnActiva;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Combate | Ranged")
+	UPROPERTY(EditDefaultsOnly, Category = "Combate")
 	float AlturaNube = 500.f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Combate | Ranged")
+	UPROPERTY(EditDefaultsOnly, Category = "Combate")
 	float DistanciaAdelanteNube = 200.f;
 
 	bool bEstaBombardeando = false;

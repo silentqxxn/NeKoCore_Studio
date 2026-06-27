@@ -24,27 +24,29 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quest")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Misiones")
 	UDataTable* QuestDataTable;
 
-	UPROPERTY(ReplicatedUsing = OnRep_ActiveQuests, BlueprintReadOnly, Category = "Quest")
+	UPROPERTY(ReplicatedUsing = OnRep_ActiveQuests, BlueprintReadOnly, Category = "Misiones")
 	TArray<FName> ActiveQuests;
+	
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Misiones")
+	TArray<FName> CompletedQuests;
 	
 	UFUNCTION()
 	void OnRep_ActiveQuests();
 
-	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Quest")
-	void AcceptQuest(FName QuestID);
+	//UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Misiones")
+	//void AcceptQuest(FName QuestID);
 
-	UFUNCTION(BlueprintCallable, Category = "Quest")
+	UFUNCTION(BlueprintCallable, Category = "Misiones")
 	void ProgressObjective(FName QuestID, ETiposDeObjetivo Type, int32 Amount);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Misiones")
 	void Server_TurnInQuest(FName QuestID);
 		
-	
-	
-	UPROPERTY(ReplicatedUsing = OnRep_IndividualProgress, BlueprintReadOnly, Category = "Quest")
+		
+	UPROPERTY(ReplicatedUsing = OnRep_IndividualProgress, BlueprintReadOnly, Category = "Misiones")
 	TArray<FQuestProgress> IndividualProgress;
 
 	UFUNCTION(Client, Reliable)
@@ -53,19 +55,22 @@ public:
 	UFUNCTION()
 	void OnRep_IndividualProgress();
 	
-	UFUNCTION(BlueprintCallable, Category = "Quest")
-	void TurnInQuest(FName QuestID);
+	UFUNCTION()
+	void OnRep_Progress();
 	
-	UPROPERTY(BlueprintAssignable, Category = "Quest")
+	//UFUNCTION(BlueprintCallable, Category = "Misiones")
+	//void TurnInQuest(FName QuestID);
+	
+	UPROPERTY(BlueprintAssignable, Category = "Misiones")
 	FOnQuestCompletedSignature OnQuestCompleted;
 	
-	UFUNCTION(BlueprintPure, Category = "Quest")
+	UFUNCTION(BlueprintPure, Category = "Misiones")
 	bool IsQuestCompleted(FName QuestID) const;
 	
-	UPROPERTY(BlueprintAssignable, Category = "Quest")
+	UPROPERTY(BlueprintAssignable, Category = "Misiones")
 	FOnQuestListUpdated OnQuestListUpdated;
 	
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Quest")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Misiones")
 	bool IsObjectiveStageComplete(FName ObjectiveID) const;
 
 	bool FindStageForObjective(FName ObjectiveID, FName& OutQuestID, FQuestStage& OutStage) const;
@@ -73,8 +78,10 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Misiones")
 	void Server_AcceptQuest(FName QuestID);
 	
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Quest")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Misiones")
 	int32 GetCurrentObjectiveProgress(FName ObjectiveID, ETiposDeObjetivo Type) const;
+	
+	
 	
 protected:
 	// Called when the game starts

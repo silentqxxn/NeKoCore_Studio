@@ -56,7 +56,6 @@ void AItemMasterAttach::Equipar_Implementation(AActor* Interactor)
 void AItemMasterAttach::NotifyActorBeginOverlap(AActor* OtherActor)
 {
     Super::NotifyActorBeginOverlap(OtherActor);
-    //if (!HasAuthority() || bEquipado || !OtherActor || OtherActor == OwningCharacter) return;
 
     if (bEquipado || !OtherActor) return;
 
@@ -85,11 +84,7 @@ void AItemMasterAttach::OnRep_OwningCharacter()
        ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
        SphereCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-        FAttachmentTransformRules Rules(
-    EAttachmentRule::SnapToTarget,
-    EAttachmentRule::SnapToTarget,
-    EAttachmentRule::KeepWorld,   
-    true
+        FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget,EAttachmentRule::SnapToTarget,EAttachmentRule::KeepWorld,true
 );       
         AttachToComponent(OwningCharacter->GetMesh(), Rules, SocketName);
     }

@@ -69,6 +69,9 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_EstaMuerto, BlueprintReadOnly, Category = "Estadisticas")
 	bool bEstaMuerto = false;
 	
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Estadisticas")
+	void Server_Curar(float Cantidad);
+	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

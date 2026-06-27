@@ -13,6 +13,7 @@
 #include "Camera/CameraComponent.h"
 #include "interfaz/InterfazRecogeItems.h"
 #include "Components/DecalComponent.h"
+#include "interfaz/InterfazConsumible.h"
 #include "componentes/ComponenteEstadisticas.h"
 #include "componentes/ComponenteArmas.h"
 #include "Characterprincipal.generated.h"
@@ -31,7 +32,7 @@ struct FExperienciaData;
 class UComponenteArmas;
 
 UCLASS(Abstract)
-class PROYECTOEJERCICIO_API ACharacterprincipal : public ACharacter, public IInterfazRecogeItems , public Iinterfazparahacerdanio, public IInterfazAttach,public IInterfazCrafteo
+class PROYECTOEJERCICIO_API ACharacterprincipal : public ACharacter, public IInterfazRecogeItems , public Iinterfazparahacerdanio, public IInterfazAttach,public IInterfazCrafteo, public IInterfazConsumible
 {
 	GENERATED_BODY()
 	
@@ -138,6 +139,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Dash;
 	
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* IA_Curar;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movimiento")
 	float MultiplicadorCorrer = 1.5f;
 	
@@ -220,7 +224,7 @@ protected:
 	void IntentarDetenerSalto();
 
 	void FinalizarCoyoteTime();
-
+//Dash
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash")
 	float FuerzaDash = 2500.f;
 
@@ -246,7 +250,12 @@ protected:
 	
 	UFUNCTION(Server, Reliable)
 	void Server_EjecutarDash(FVector FuerzaEmpuje);
-
+//Curarse
+	void PresionTeclaCuracion();
+	
+	UFUNCTION(Server, Reliable)
+	void Server_ProcesarConsumoInterface(FName ItemID, float CantidadEfecto);
+	
 private:
 	void DropCurrentWeapon();
 	bool bMovimientoBloqueado = false;
@@ -260,6 +269,10 @@ private:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+	virtual bool ConsumirItem_Implementation(FName ItemID, float CantidadEfecto) override;
+	
+	
 
 	// Called to bind functionality to input
 	
