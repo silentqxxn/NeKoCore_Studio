@@ -52,6 +52,7 @@ void UComponenteEstadisticas::Server_AplicarMultiplicadoresNivel_Implementation(
 	}
 
 	OnRep_VidaActual();
+	OnRep_AtaqueActual();
 }
 
 void UComponenteEstadisticas::Server_Revivir_Implementation()
@@ -147,5 +148,10 @@ void UComponenteEstadisticas::TickComponent(float DeltaTime, ELevelTick TickType
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+void UComponenteEstadisticas::OnRep_AtaqueActual()
+{
+	OnAtaqueCambia.Broadcast(AtaqueActual);
 }
 

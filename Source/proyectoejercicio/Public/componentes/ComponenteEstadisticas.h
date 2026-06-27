@@ -9,6 +9,8 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnVidaCambia, float, VidaActual, float, VidaMaxima);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPersonajeMuere);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPersonajeRevive);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEstadisticaCambia, float, NuevoValor);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAtaqueCambia, float, NuevoAtaque);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROYECTOEJERCICIO_API UComponenteEstadisticas : public UActorComponent
@@ -27,8 +29,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Estadisticas")
 	float AtaqueBase = 15.f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Estadisticas")
+	UPROPERTY(ReplicatedUsing = OnRep_AtaqueActual, EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	float AtaqueActual;
+	
+	UPROPERTY(BlueprintAssignable, Category = "Eventos")
+	FOnAtaqueCambia OnAtaqueCambia;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Estadisticas")
 	float VelocidadBase = 600.f;
@@ -72,6 +77,8 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Estadisticas")
 	void Server_Curar(float Cantidad);
 	
+
+	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -80,6 +87,8 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
+	UFUNCTION()
+	void OnRep_AtaqueActual();
 	
 	UFUNCTION()
 	void OnRep_VidaActual();

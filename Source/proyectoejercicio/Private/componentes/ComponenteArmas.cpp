@@ -4,6 +4,7 @@
 #include "componentes/ComponenteArmas.h"
 #include "Actores/WeaponMaster.h"
 #include "GameFramework/Character.h"
+#include "componentes/ComponenteEstadisticas.h"
 #include "EWeaponType.h"
 #include "Net/UnrealNetwork.h"
 
@@ -42,6 +43,15 @@ void UComponenteArmas::Server_RecogerArma_Implementation(AWeaponMaster* Arma)
 	AttacharArma(Arma, Arma->SocketName);
 	SlotEquipado = Arma;
 
+	if (UComponenteEstadisticas* Stats = GetOwner()->FindComponentByClass<UComponenteEstadisticas>())
+	{
+		Stats->AtaqueActual += Arma->DanioBase;
+       
+		if (GetOwner()->HasAuthority())
+		{
+			Stats->OnRep_AtaqueActual(); 
+		}
+	}
 	if (GetOwner()) GetOwner()->ForceNetUpdate();
 
 }
@@ -58,10 +68,20 @@ void UComponenteArmas::Server_SoltarEquipada_Implementation(EEquipableSlot Slot)
 
 	AWeaponMaster* ArmaASoltar = SlotEquipado;
 
+	if (UComponenteEstadisticas* Stats = Owner->FindComponentByClass<UComponenteEstadisticas>())
+	{
+		Stats->AtaqueActual -= ArmaASoltar->DanioBase; 
+       
+		if (Owner->HasAuthority())
+		{
+			Stats->OnRep_AtaqueActual();
+		}
+	}
+
 	ArmaASoltar->bEquipado = false;
 	ArmaASoltar->SetOwner(nullptr);
 
-	Multicast_DetachVisual(ArmaASoltar);
+	//Multicast_DetachVisual(ArmaASoltar);
 
 	FVector DropLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * 120.f;
 	ArmaASoltar->SetActorLocation(DropLocation);
@@ -77,7 +97,7 @@ void UComponenteArmas::Server_SoltarEquipada_Implementation(EEquipableSlot Slot)
 	ArmaASoltar->EnablePickupDelayed(1.0f);
 
 	SlotEquipado = nullptr;
-
+	OnRep_ArmaManoDerecha(ArmaASoltar);
 	Owner->ForceNetUpdate();
 }
 
@@ -104,6 +124,59 @@ void UComponenteArmas::Multicast_AttachVisual_Implementation(AWeaponMaster* Arma
 
 	FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepRelative, true);
 	Arma->AttachToComponent(OwnerChar->GetMesh(), Rules, Socket);
+}
+
+void UComponenteArmas::OnRep_ArmaManoDerecha(AWeaponMaster* ArmaVieja)
+{
+	ACharacter* OwnerChar = Cast<ACharacter>(GetOwner());
+	if (!OwnerChar) return;
+
+	if (ArmaManoDerecha == nullptr)
+	{
+		if (ArmaVieja) 
+		{
+			ArmaVieja->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		}
+	}
+	else
+	{
+		ArmaManoDerecha->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+        
+		FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepRelative, true);
+		ArmaManoDerecha->AttachToComponent(OwnerChar->GetMesh(), Rules, ArmaManoDerecha->SocketName);
+	}
+}
+void UComponenteArmas::OnRep_ArmaManoIzquierda(AWeaponMaster* ArmaVieja)
+{
+	ACharacter* OwnerChar = Cast<ACharacter>(GetOwner());
+	if (!OwnerChar) return;
+
+	if (ArmaManoIzquierda) 
+	{
+		FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepRelative, true);
+		ArmaManoIzquierda->AttachToComponent(OwnerChar->GetMesh(), Rules, ArmaManoIzquierda->SocketName);
+	}
+	else if (ArmaVieja) 
+	{
+		ArmaVieja->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	}
+}
+
+void UComponenteArmas::OnRep_ArmaEspalda(AWeaponMaster* ArmaVieja)
+{
+	ACharacter* OwnerChar = Cast<ACharacter>(GetOwner());
+	if (!OwnerChar) return;
+	
+	if (ArmaEspalda)
+	{
+		FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepRelative, true);
+		ArmaEspalda->AttachToComponent(OwnerChar->GetMesh(), Rules, ArmaEspalda->SocketName);
+	}
+	else if (ArmaVieja) 
+	{
+		ArmaVieja->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	}
+
 }
 
 AWeaponMaster*& UComponenteArmas::GetSlotEquipado(EEquipableSlot Slot)
@@ -134,7 +207,7 @@ void UComponenteArmas::AttacharArma(AWeaponMaster* Arma, FName Socket)
 	FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepRelative, true);
 	Arma->AttachToComponent(Owner->GetMesh(), Rules, Socket);
 
-	Multicast_AttachVisual(Arma, Socket);
+	//Multicast_AttachVisual(Arma, Socket);
 
 }
 
