@@ -1,6 +1,5 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Actores/ZonaNocturna.h"
 #include "Components/BoxComponent.h"
 #include "Engine/DirectionalLight.h"
@@ -28,14 +27,12 @@ void AZonaNocturna::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Vinculamos los eventos de colisión
 	ZonaColision->OnComponentBeginOverlap.AddDynamic(this, &AZonaNocturna::AlEntrarEnZona);
 	ZonaColision->OnComponentEndOverlap.AddDynamic(this, &AZonaNocturna::AlSalirDeZona);
 
-	// Guardamos cómo estaba el clima de forma natural en el nivel
-	if (LuzDelSol && LuzDelSol->GetComponent())
+	if (LuzDelSol)
 	{
-		PitchSolDia = LuzDelSol->GetComponent()->GetComponentRotation().Pitch;
+		//PitchSolDia = LuzDelSol->()->GetComponentRotation().Pitch;
 	}
 	if (Niebla && Niebla->GetComponent())
 	{
@@ -51,11 +48,9 @@ void AZonaNocturna::Tick(float DeltaTime)
 
 void AZonaNocturna::AlEntrarEnZona(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-    // Verificamos que sea el jugador principal y no un enemigo o proyectil
     if (OtherActor && OtherActor->IsA(ACharacterprincipal::StaticClass()))
     {
         bHaciaLaNoche = true;
-        // Encendemos el Timer de transición
         GetWorldTimerManager().SetTimer(TimerTransicionEntorno, this, &AZonaNocturna::InterpolarEntorno, 0.01f, true);
     }
 }
@@ -64,54 +59,56 @@ void AZonaNocturna::AlSalirDeZona(UPrimitiveComponent* OverlappedComponent, AAct
 {
     if (OtherActor && OtherActor->IsA(ACharacterprincipal::StaticClass()))
     {
-        bHaciaLaNoche = false; // El objetivo vuelve a ser el Día
-        GetWorldTimerManager().SetTimer(TimerTransicionEntorno, this, &AZonaNocturna::InterpolarEntorno, 0.01f, true);
+        bHaciaLaNoche = false; 
+    	GetWorldTimerManager().SetTimer(TimerTransicionEntorno, this, &AZonaNocturna::InterpolarEntorno, 0.01f, true);
     }
 }
 
 void AZonaNocturna::InterpolarEntorno()
 {
-    bool bSolTerminado = true;
-    bool bNieblaTerminada = true;
+	bool bSolTerminado = true;
+	bool bNieblaTerminada = true;
 
-    // Definimos hacia dónde vamos dependiendo de si el jugador está adentro o afuera
-    float TargetPitch = bHaciaLaNoche ? PitchSolNoche : PitchSolDia;
-    float TargetDensidad = bHaciaLaNoche ? DensidadNieblaNoche : DensidadNieblaDia;
+	float TargetPitch = bHaciaLaNoche ? PitchSolNoche : PitchSolDia;
+	float TargetDensidad = bHaciaLaNoche ? DensidadNieblaNoche : DensidadNieblaDia;
 
-    // 1. Mover el Sol
-    if (LuzDelSol && LuzDelSol->GetComponent())
-    {
-        float PitchActual = LuzDelSol->GetComponent()->GetComponentRotation().Pitch;
+	if (LuzDelSol)
+	{
+		// Usamos GetLightComponent() para acceder a la luz real
+		auto* LightComp = LuzDelSol->GetLightComponent();
         
-        if (!FMath::IsNearlyEqual(PitchActual, TargetPitch, 0.5f))
-        {
-            float NuevoPitch = FMath::FInterpTo(PitchActual, TargetPitch, 0.01f, VelocidadTransicion);
-            
-            FRotator NuevaRotacion = LuzDelSol->GetComponent()->GetComponentRotation();
-            NuevaRotacion.Pitch = NuevoPitch;
-            LuzDelSol->GetComponent()->SetWorldRotation(NuevaRotacion);
-            
-            bSolTerminado = false;
-        }
-    }
-
-    // 2. Espesar la Niebla
-    if (Niebla && Niebla->GetComponent())
-    {
-        float DensidadActual = Niebla->GetComponent()->FogDensity;
+		if (LightComp)
+		{
+			float PitchActual = LightComp->GetComponentRotation().Pitch;
         
-        if (!FMath::IsNearlyEqual(DensidadActual, TargetDensidad, 0.005f))
-        {
-            float NuevaDensidad = FMath::FInterpTo(DensidadActual, TargetDensidad, 0.01f, VelocidadTransicion);
-            Niebla->GetComponent()->SetFogDensity(NuevaDensidad);
+			if (!FMath::IsNearlyEqual(PitchActual, TargetPitch, 0.5f))
+			{
+				float NuevoPitch = FMath::FInterpTo(PitchActual, TargetPitch, 0.01f, VelocidadTransicion);
             
-            bNieblaTerminada = false;
-        }
-    }
+				FRotator NuevaRotacion = LightComp->GetComponentRotation();
+				NuevaRotacion.Pitch = NuevoPitch;
+				LightComp->SetWorldRotation(NuevaRotacion);
+            
+				bSolTerminado = false;
+			}
+		}
+	}
 
-    // 3. Apagar el Timer si ambos elementos llegaron a su objetivo
-    if (bSolTerminado && bNieblaTerminada)
-    {
-        GetWorldTimerManager().ClearTimer(TimerTransicionEntorno);
-    }
+	if (Niebla && Niebla->GetComponent())
+	{
+		float DensidadActual = Niebla->GetComponent()->FogDensity;
+        
+		if (!FMath::IsNearlyEqual(DensidadActual, TargetDensidad, 0.005f))
+		{
+			float NuevaDensidad = FMath::FInterpTo(DensidadActual, TargetDensidad, 0.01f, VelocidadTransicion);
+			Niebla->GetComponent()->SetFogDensity(NuevaDensidad);
+            
+			bNieblaTerminada = false;
+		}
+	}
+
+	if (bSolTerminado && bNieblaTerminada)
+	{
+		GetWorldTimerManager().ClearTimer(TimerTransicionEntorno);
+	}
 }

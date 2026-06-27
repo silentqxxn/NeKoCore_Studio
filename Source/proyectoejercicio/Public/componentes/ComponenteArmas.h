@@ -21,15 +21,15 @@ public:
 	virtual void GetLifetimeReplicatedProps(
 		TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	UPROPERTY(Replicated, BlueprintReadOnly, Category="Armas")
-	AWeaponMaster* ArmaManoDerecha = nullptr;     // melee
+	UPROPERTY(ReplicatedUsing = OnRep_ArmaManoDerecha, BlueprintReadWrite, EditAnywhere, Category = "Armas")
+	AWeaponMaster* ArmaManoDerecha;
 
-	UPROPERTY(Replicated, BlueprintReadOnly, Category="Armas")
-	AWeaponMaster* ArmaManoIzquierda = nullptr;   // escudo
+	UPROPERTY(ReplicatedUsing = OnRep_ArmaManoIzquierda, BlueprintReadWrite, EditAnywhere, Category = "Armas")
+	AWeaponMaster* ArmaManoIzquierda;
 
-	UPROPERTY(Replicated, BlueprintReadOnly, Category="Armas")
-	AWeaponMaster* ArmaEspalda = nullptr;         // distancia
-
+	UPROPERTY(ReplicatedUsing = OnRep_ArmaEspalda, BlueprintReadWrite, EditAnywhere, Category = "Armas")
+	AWeaponMaster* ArmaEspalda;
+	
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category="Armas")
 	void Server_RecogerArma(AWeaponMaster* Arma);
@@ -43,6 +43,14 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_DetachVisual(AWeaponMaster* Arma);
+	UFUNCTION()
+	void OnRep_ArmaManoDerecha(AWeaponMaster* ArmaVieja);
+
+	UFUNCTION()
+	void OnRep_ArmaManoIzquierda(AWeaponMaster* ArmaVieja);
+
+	UFUNCTION()
+	void OnRep_ArmaEspalda(AWeaponMaster* ArmaVieja);
 	
 private:
 	AWeaponMaster*& GetSlotEquipado(EEquipableSlot Slot);
