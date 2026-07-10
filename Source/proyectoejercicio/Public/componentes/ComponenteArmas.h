@@ -54,7 +54,8 @@ public:
 	
 private:
 	AWeaponMaster*& GetSlotEquipado(EEquipableSlot Slot);
-
+	void SetupArmaAdjuntada(AWeaponMaster* Arma);
+	void SetupArmaDropeada(AWeaponMaster* Arma);
 	void AttacharArma(AWeaponMaster* Arma, FName Socket);
 protected:
 	// Called when the game starts

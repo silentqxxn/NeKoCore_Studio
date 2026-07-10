@@ -10,6 +10,8 @@ AWeaponMaster::AWeaponMaster()
 	
 }
 
+
+
 void AWeaponMaster::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

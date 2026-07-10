@@ -70,8 +70,8 @@ void UComponenteArmas::Server_SoltarEquipada_Implementation(EEquipableSlot Slot)
 
 	if (UComponenteEstadisticas* Stats = Owner->FindComponentByClass<UComponenteEstadisticas>())
 	{
-		Stats->AtaqueActual -= ArmaASoltar->DanioBase; 
-       
+		Stats->AtaqueActual -= ArmaASoltar->DanioBase;
+
 		if (Owner->HasAuthority())
 		{
 			Stats->OnRep_AtaqueActual();
@@ -81,23 +81,32 @@ void UComponenteArmas::Server_SoltarEquipada_Implementation(EEquipableSlot Slot)
 	ArmaASoltar->bEquipado = false;
 	ArmaASoltar->SetOwner(nullptr);
 
-	//Multicast_DetachVisual(ArmaASoltar);
+	// Desacoplar antes de reposicionar
+	ArmaASoltar->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
 	FVector DropLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * 120.f;
 	ArmaASoltar->SetActorLocation(DropLocation);
 	ArmaASoltar->SetReplicatingMovement(true);
-    
+
 	ArmaASoltar->ItemMesh->SetSimulatePhysics(false);
 	ArmaASoltar->ItemMesh->SetEnableGravity(false);
-	ArmaASoltar->ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);    
-	ArmaASoltar->ItemMesh->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Ignore); 
+	ArmaASoltar->ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	ArmaASoltar->ItemMesh->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Ignore);
 	ArmaASoltar->ItemMesh->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECR_Ignore);
-    
+
 	ArmaASoltar->SphereCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	ArmaASoltar->EnablePickupDelayed(1.0f);
 
 	SlotEquipado = nullptr;
-	OnRep_ArmaManoDerecha(ArmaASoltar);
+
+	// Bug 1 fix: llamar el OnRep correcto según el slot
+	switch (Slot)
+	{
+	case EEquipableSlot::ManoIzquierda: OnRep_ArmaManoIzquierda(ArmaASoltar); break;
+	case EEquipableSlot::Espalda:       OnRep_ArmaEspalda(ArmaASoltar);       break;
+	default:                            OnRep_ArmaManoDerecha(ArmaASoltar);    break;
+	}
+
 	Owner->ForceNetUpdate();
 }
 
@@ -128,20 +137,19 @@ void UComponenteArmas::Multicast_AttachVisual_Implementation(AWeaponMaster* Arma
 
 void UComponenteArmas::OnRep_ArmaManoDerecha(AWeaponMaster* ArmaVieja)
 {
+	
 	ACharacter* OwnerChar = Cast<ACharacter>(GetOwner());
 	if (!OwnerChar) return;
 
-	if (ArmaManoDerecha == nullptr)
+	if (ArmaVieja && ArmaVieja != ArmaManoDerecha)
 	{
-		if (ArmaVieja) 
-		{
-			ArmaVieja->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		}
+		SetupArmaDropeada(ArmaVieja);
+		ArmaVieja->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	}
-	else
+
+	if (ArmaManoDerecha)
 	{
-		ArmaManoDerecha->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-        
+		SetupArmaAdjuntada(ArmaManoDerecha);
 		FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepRelative, true);
 		ArmaManoDerecha->AttachToComponent(OwnerChar->GetMesh(), Rules, ArmaManoDerecha->SocketName);
 	}
@@ -151,14 +159,17 @@ void UComponenteArmas::OnRep_ArmaManoIzquierda(AWeaponMaster* ArmaVieja)
 	ACharacter* OwnerChar = Cast<ACharacter>(GetOwner());
 	if (!OwnerChar) return;
 
-	if (ArmaManoIzquierda) 
+	if (ArmaVieja && ArmaVieja != ArmaManoIzquierda)
 	{
+		SetupArmaDropeada(ArmaVieja);
+		ArmaVieja->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	}
+
+	if (ArmaManoIzquierda)
+	{
+		SetupArmaAdjuntada(ArmaManoIzquierda);
 		FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepRelative, true);
 		ArmaManoIzquierda->AttachToComponent(OwnerChar->GetMesh(), Rules, ArmaManoIzquierda->SocketName);
-	}
-	else if (ArmaVieja) 
-	{
-		ArmaVieja->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	}
 }
 
@@ -166,15 +177,18 @@ void UComponenteArmas::OnRep_ArmaEspalda(AWeaponMaster* ArmaVieja)
 {
 	ACharacter* OwnerChar = Cast<ACharacter>(GetOwner());
 	if (!OwnerChar) return;
-	
+
+	if (ArmaVieja && ArmaVieja != ArmaEspalda)
+	{
+		SetupArmaDropeada(ArmaVieja);
+		ArmaVieja->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	}
+
 	if (ArmaEspalda)
 	{
+		SetupArmaAdjuntada(ArmaEspalda);
 		FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepRelative, true);
 		ArmaEspalda->AttachToComponent(OwnerChar->GetMesh(), Rules, ArmaEspalda->SocketName);
-	}
-	else if (ArmaVieja) 
-	{
-		ArmaVieja->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	}
 
 }
@@ -187,6 +201,28 @@ AWeaponMaster*& UComponenteArmas::GetSlotEquipado(EEquipableSlot Slot)
 	case EEquipableSlot::Espalda:       return ArmaEspalda;
 	default:                            return ArmaManoDerecha;
 	}
+}
+
+void UComponenteArmas::SetupArmaAdjuntada(AWeaponMaster* Arma)
+{
+	if (!Arma) return;
+	Arma->SetReplicatingMovement(false);
+	Arma->ItemMesh->SetSimulatePhysics(false);
+	Arma->ItemMesh->SetEnableGravity(false);
+	Arma->ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Arma->SphereCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void UComponenteArmas::SetupArmaDropeada(AWeaponMaster* Arma)
+{
+	if (!Arma) return;
+	Arma->SetReplicatingMovement(true);
+	Arma->ItemMesh->SetSimulatePhysics(false);
+	Arma->ItemMesh->SetEnableGravity(false);
+	Arma->ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	Arma->ItemMesh->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Ignore);
+	Arma->ItemMesh->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECR_Ignore);
+	Arma->SphereCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 
